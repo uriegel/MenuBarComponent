@@ -12,10 +12,6 @@ var server = new Server(new()
 });
 server.Start();
 Console.WriteLine($"Running test server on http://localhost:{port}");
-Console.WriteLine($"Press any key to exit...");
 Console.ReadLine();
-server.Stop();
-Console.WriteLine($"Test server stopped.");
-
 
 
