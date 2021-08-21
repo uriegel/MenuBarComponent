@@ -2,15 +2,23 @@
     <head>
         <title>Menubar Component</title>
         <meta charset="utf-8"/>
-        <link rel="stylesheet" href="styles/style.css">
+        <link rel="stylesheet" href="styles.css">
     </head>
 
     <body>
         <div class="root">
-            <h1>Menubar Component</h1>
-            <p>
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-            </p>
+            <menubar-component autoMode=true>
+                <menubar-item-component slot="menuitem">Eintrag 1</menubar-item-component>
+                <menubar-item-component slot="menuitem">Eintrag 2</menubar-item-component>
+                <menubar-item-component slot="menuitem">Eintrag 3</menubar-item-component>
+                <menubar-item-component slot="menuitem">Eintrag 4</menubar-item-component>
+            </menubar-component>
+            <div> 
+                <h1>Menubar Component</h1>
+                <p>
+                    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+                </p>
+            </div>
         </div>
 
         <script type="module" src="index.js"></script>
