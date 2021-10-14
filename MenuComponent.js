@@ -27,6 +27,65 @@ class MenubarComponent extends HTMLElement {
         if (this.autoMode)
             this.menubar.classList.add("invisible")
     }
+
+    connectedCallback() {
+        document.addEventListener("keydown", evt => {
+            if (this.autoMode && evt.keyCode == 18) { // alt
+                if (this.menubar.classList.contains("invisible"))
+                    this.menubar.classList.remove("invisible")
+                else
+                    this.menubar.classList.add("invisible")
+                // setTimeout(() => {
+                //     this.$el.style.setProperty('--vue-menu-submenu-top', `${this.$el.children[0].clientHeight}px`)
+                //     this.$emit('resize')
+                // })
+                evt.preventDefault()
+                evt.stopPropagation()
+            }            
+            // if (this.menuState.isKeyboardActivated) {
+            //     const hits = parseShortcuts(this.shortcuts, evt.key)
+            //     if (hits.length > 0) {
+            //         this.menuState.selectedIndex = hits[0]
+            //         this.menuState.isKeyboardActivated = false
+            //         evt.preventDefault()
+            //         evt.stopPropagation()
+            //     }
+            // }
+
+            if (evt.which == 18 && !evt.repeat && evt.code == "AltLeft") { // Alt 
+            //     if (this.menuState.accelerated) {
+            //         this.closeMenu()
+            //         return
+            //     }
+            //     if (!this.menuState.isKeyboardActivated) {
+            //         if (this.menuState.selectedIndex == -1)
+            //             this.menuState.isKeyboardActivated = true
+            //         this.menuState.accelerated = true
+            //         this.menuState.lastActive = document.activeElement
+            //     } 
+            }
+            else if (evt.which == 27) // ESC
+                this.closeMenu()
+        }, true)
+        document.addEventListener("keyup", evt => {
+            // if (evt.which == 18) { // Alt 
+            //     if (this.menuState.isKeyboardActivated && this.menuState.selectedIndex == -1) 
+            //         this.menuState.selectedIndex = 0
+            // }
+        }, true)
+    }
+
+    closeMenu() {
+        //this.stopKeyboardActivated()
+        this.selectedIndex = -1
+        // if (this.menuState.lastActive)
+        //     this.menuState.lastActive.focus()
+        if (!this.menubar.classList.contains("invisible")) {
+            if (this.autoMode)
+                this.menubar.classList.add("invisible")
+//            setTimeout(() => this.$emit('resize'))
+        }        
+    }
 }
 
 class MenubarItemComponent extends HTMLElement {
@@ -37,8 +96,63 @@ class MenubarItemComponent extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
+                :host {
+                    --menubar-hover-color : lightblue;
+                }            
                 .menubarItem {
                     float: left;
+                }
+                li:hover {
+                    background-color: var(--menubar-hover-color);
+                }
+            </style>
+            <li class="menubarItem">
+                <slot></slot>
+            </li>
+        `
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+    }
+}
+
+class SubmenuComponent extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: 'open' })
+
+        const template = document.createElement('template')
+        template.innerHTML = ` 
+            <style>
+                .submenuHeader {
+                    margin-left: 5px;
+                    margin-top: 2px;
+                    margin-right: 5px;
+                    margin-bottom: 2px;
+                }
+            </style>
+            <div id="header" class="submenuHeader"></div>
+        `
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.header = this.shadowRoot.getElementById("header")
+        this.header.innerText = this.getAttribute("header")
+    }
+}
+
+class MenuItemComponent extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: 'open' })
+
+        const template = document.createElement('template')
+        template.innerHTML = ` 
+            <style>
+                :host {
+                    --menubar-hover-color : lightblue;
+                }            
+                .menubarItem {
+                    float: left;
+                }
+                li:hover {
+                    background-color: var(--menubar-hover-color);
                 }
             </style>
             <li class="menubarItem">
@@ -51,3 +165,5 @@ class MenubarItemComponent extends HTMLElement {
 
 customElements.define('menubar-component', MenubarComponent)
 customElements.define('menubar-item-component', MenubarItemComponent)
+customElements.define('submenu-component', SubmenuComponent)
+customElements.define('menuitem-component', MenuItemComponent)

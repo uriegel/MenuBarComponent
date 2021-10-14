@@ -8,10 +8,26 @@
     <body>
         <div class="root">
             <menubar-component autoMode=true>
-                <menubar-item-component slot="menuitem">Eintrag 1</menubar-item-component>
-                <menubar-item-component slot="menuitem">Eintrag 2</menubar-item-component>
-                <menubar-item-component slot="menuitem">Eintrag 3</menubar-item-component>
-                <menubar-item-component slot="menuitem">Eintrag 4</menubar-item-component>
+                <menubar-item-component slot="menuitem">
+                    <submenu-component header="Datei">
+
+                    </submenu-component>
+                </menubar-item-component>
+                <menubar-item-component slot="menuitem">
+                    <submenu-component header="Navigation">
+                        
+                    </submenu-component>
+                </menubar-item-component>
+                <menubar-item-component slot="menuitem">
+                    <submenu-component header="Selektion">
+                        
+                    </submenu-component>
+                </menubar-item-component>
+                <menubar-item-component slot="menuitem">
+                    <submenu-component header="Ansicht">
+                        
+                    </submenu-component>
+                </menubar-item-component>
             </menubar-component>
             <div> 
                 <h1>Menubar Component</h1>
