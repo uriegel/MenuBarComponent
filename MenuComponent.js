@@ -23,7 +23,7 @@ class MenubarComponent extends HTMLElement {
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
         this.menubar = this.shadowRoot.querySelector('ul')
-        this.autoMode = this.attributes.autoMode
+        this.autoMode = this.getAttribute("autoMode")
         if (this.autoMode)
             this.menubar.classList.add("invisible")
     }
@@ -129,11 +129,13 @@ class SubmenuComponent extends HTMLElement {
                     margin-bottom: 2px;
                 }
             </style>
-            <div id="header" class="submenuHeader"></div>
+            <div id="header" class="submenuHeader">
+                <menuitem-component id="item"></menuitem-component>
+            </div>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.header = this.shadowRoot.getElementById("header")
-        this.header.innerText = this.getAttribute("header")
+        this.item = this.shadowRoot.getElementById("item")
+        this.item.setAttribute("text", this.getAttribute("header"))
     }
 }
 
@@ -146,20 +148,48 @@ class MenuItemComponent extends HTMLElement {
         template.innerHTML = ` 
             <style>
                 :host {
-                    --menubar-hover-color : lightblue;
+                    --menubar-hover-color: lightblue;
+                    --menubar-selected-color: white;
+                    --menubar-selected-background-color: blue;
                 }            
-                .menubarItem {
-                    float: left;
+                .menuitemtext {
+                    display: flex;
                 }
-                li:hover {
-                    background-color: var(--menubar-hover-color);
-                }
+                .menuitem.selected {
+                    background-color: var(--menubar-selected-background-color);
+                    color: var(--menubar-selected-color);
+                }                
             </style>
-            <li class="menubarItem">
-                <slot></slot>
-            </li>
+            <div class="menuItem">
+                <div id="text" class="menuitemtext">
+                    <span>Der Eintrag</span>
+                </div>
+            </div>
         `
+
+    //     <div class="menuItem">
+    //     <div class="menuitemtext" v-if="!menuState.accelerated && !separator">
+    //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
+    //         <span>{{name}}</span>
+    //         <span class="spacer"> </span>
+    //         <span v-if='item.accelerator'>{{item.accelerator.name}}</span>
+    //     </div>
+    //     <div class="menuitemtext" v-if="menuState.accelerated && !separator">
+    //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
+    //         <div>
+    //             <span>{{pre}}</span><span class="accelerated">{{acc}}</span><span>{{post}}</span>
+    //         </div>
+    //         <span class="spacer"> </span>
+    //         <span v-if='item.accelerator'>{{item.accelerator.name}}</span>
+    //     </div>
+    //     <hr v-if="separator" />                
+    // </div>
+
+
         this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.text = this.shadowRoot.getElementById("text")
+        this.text.innerHTML = this.getAttribute("text")
+
     }
 }
 
