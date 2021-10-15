@@ -44,6 +44,7 @@ class MenubarComponent extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true))
 
         const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        this.itemCount = items.length
         items.forEach((n, i) => n.setAttribute("index", i))
 
         this.menubar = this.shadowRoot.querySelector('ul')
@@ -86,10 +87,20 @@ class MenubarComponent extends HTMLElement {
                         this.isKeyboardActivated = true
                     this.isAccelerated = true
                     //this.menuState.lastActive = document.activeElement
-                } 
+                }
             }
             else if (evt.which == 27) // ESC
                 this.closeMenu()
+            else if (evt.which == 37) { // <-
+                this.selectedIndex--
+                if (this.selectedIndex == -1)
+                    this.selectedIndex = this.itemCount - 1
+            }
+            else if (evt.which == 39) { // ->
+                this.selectedIndex++
+                if (this.selectedIndex == this.itemCount)
+                    this.selectedIndex = 0
+            }
         }, true)
         document.addEventListener("keyup", evt => {
             if (evt.which == 18) { // Alt 
@@ -126,34 +137,43 @@ class SubmenuComponent extends HTMLElement {
         template.innerHTML = ` 
             <style>
                 :host {
-                    --menubar-hover-color : lightblue;
+                    --menubar-hover-color: lightblue;
+                    --menubar-selected-color: white;
+                    --menubar-selected-background-color: blue;
                 }            
-                .menubarItem {
+                #menubarItem {
                     float: left;
                 }
-                li:hover {
+                #header.selected {
+                    color: var(--menubar-selected-color);
+                    background-color: var(--menubar-selected-background-color);
+                }
+                #header:hover {
                     background-color: var(--menubar-hover-color);
                 }
                 .submenuHeader {
-                    margin-left: 5px;
-                    margin-top: 2px;
-                    margin-right: 5px;
-                    margin-bottom: 2px;
+                    padding-left: 5px;
+                    padding-top: 2px;
+                    padding-right: 5px;
+                    padding-bottom: 2px;
                 }
             </style>
-            <li class="menubarItem">
+            <li id="menubarItem">
                 <div id="header" class="submenuHeader">
                     <menubar-menuitem-component id="item"></menubar-menuitem-component>
                 </div>
+                <div>Hallo</div>
             </li>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
         this.item = this.shadowRoot.getElementById("item")
+        this.header = this.shadowRoot.getElementById("header")
         this.item.setAttribute("text", this.getAttribute("header"))
+        this.index = Number.parseInt(this.getAttribute("index"))
     }
 
     static get observedAttributes() {
-        return ['is-accelerated']
+        return ['is-accelerated', 'selected-index']
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -161,6 +181,15 @@ class SubmenuComponent extends HTMLElement {
             case "is-accelerated":
                 if (oldValue != newValue)
                     this.handleIsAccelerated(newValue)
+                break
+            case "selected-index":
+                if (oldValue != newValue) {
+                    const selectedIndex = Number.parseInt(newValue)
+                    if (selectedIndex == this.index)
+                        this.header.classList.add("selected")
+                    else
+                    this.header.classList.remove("selected")
+                }
                 break
         }
     }
