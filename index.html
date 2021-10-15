@@ -7,27 +7,11 @@
 
     <body>
         <div class="root">
-            <menubar-component autoMode=true>
-                <menubar-item-component slot="menuitem">
-                    <submenu-component header="_Datei">
-
-                    </submenu-component>
-                </menubar-item-component>
-                <menubar-item-component slot="menuitem">
-                    <submenu-component header="_Navigation">
-                        
-                    </submenu-component>
-                </menubar-item-component>
-                <menubar-item-component slot="menuitem">
-                    <submenu-component header="_Selektion">
-                        
-                    </submenu-component>
-                </menubar-item-component>
-                <menubar-item-component slot="menuitem">
-                    <submenu-component header="_Ansicht">
-                        
-                    </submenu-component>
-                </menubar-item-component>
+            <menubar-component automode=true>
+                <menubar-submenu-component header="_Datei"></menubar-submenu-component>
+                <menubar-submenu-component header="_Navigation"></menubar-submenu-component>
+                <menubar-submenu-component header="_Selektion"></menubar-submenu-component>
+                <menubar-submenu-component header="_Ansicht"></menubar-submenu-component>
             </menubar-component>
             <div> 
                 <h1>Menubar Component</h1>
