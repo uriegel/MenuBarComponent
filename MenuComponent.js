@@ -43,8 +43,10 @@ class MenubarComponent extends HTMLElement {
     }
     set isAccelerated(value) {
         this._isAccelerated = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        const items = Array.from(document.querySelectorAll('menubar-menuitem-component'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
+        const mainitems = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        mainitems.forEach(n => n.setAttribute("is-accelerated", value))
     }
 
     get isKeyboardActivated()  {
@@ -491,7 +493,6 @@ customElements.define('menubar-submenu-list-component', SubmenuListComponent)
 customElements.define('menubar-menuitem-component', MenuItemComponent)
 customElements.define('menubar-separator-component', SeparatorComponent)
 
-// TODO accelerated in submenu
 // TODO Click
 // TODO Checkbox
 // TODO Mouse control
