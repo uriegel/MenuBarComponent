@@ -1,31 +1,4 @@
 class MenubarComponent extends HTMLElement {
-
-    get isAccelerated()  {
-        return this._isAccelerated
-    }
-    set isAccelerated(value) {
-        this._isAccelerated = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
-        items.forEach(n => n.setAttribute("is-accelerated", value))
-    }
-
-    get isKeyboardActivated()  {
-        return this._isKeyboardActivated
-    }
-    set isKeyboardActivated(value) {
-        this._isKeyboardActivated = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
-        items.forEach(n => n.setAttribute("is-keyboard-activated", value))
-    }
-    
-    get selectedIndex()  {
-        return this._selectedIndex
-    }
-    set selectedIndex(value) {
-        this._selectedIndex = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
-        items.forEach(n => n.setAttribute("selected-index", value))
-    }
     constructor() {
         super()
         this.isAccelerated = false
@@ -52,6 +25,8 @@ class MenubarComponent extends HTMLElement {
             </ul>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.style.outline = "none"
+        this.setAttribute("tabindex", "-1")
 
         const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
         this.itemCount = items.length
@@ -61,6 +36,33 @@ class MenubarComponent extends HTMLElement {
         this.autoMode = this.getAttribute("automode") == "true"
         if (this.autoMode)
             this.menubar.classList.add("invisible")
+    }
+
+    get isAccelerated()  {
+        return this._isAccelerated
+    }
+    set isAccelerated(value) {
+        this._isAccelerated = value
+        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        items.forEach(n => n.setAttribute("is-accelerated", value))
+    }
+
+    get isKeyboardActivated()  {
+        return this._isKeyboardActivated
+    }
+    set isKeyboardActivated(value) {
+        this._isKeyboardActivated = value
+        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        items.forEach(n => n.setAttribute("is-keyboard-activated", value))
+    }
+    
+    get selectedIndex()  {
+        return this._selectedIndex
+    }
+    set selectedIndex(value) {
+        this._selectedIndex = value
+        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        items.forEach(n => n.setAttribute("selected-index", value))
     }
 
     connectedCallback() {
@@ -97,31 +99,47 @@ class MenubarComponent extends HTMLElement {
                         this.isKeyboardActivated = true
                     this.isAccelerated = true
                     //this.menuState.lastActive = document.activeElement
+                    this.focus()
                 }
+                evt.preventDefault()
+                evt.stopPropagation()                
             }
             else if (evt.which == 27) // ESC
                 this.closeMenu()
-            else if (evt.which == 37) { // <-
-                this.selectedIndex--
-                if (this.selectedIndex == -1)
-                    this.selectedIndex = this.itemCount - 1
-            }
-            else if (evt.which == 39) { // ->
-                this.selectedIndex++
-                if (this.selectedIndex == this.itemCount)
-                    this.selectedIndex = 0
-            }
-            else if (evt.which == 40) { //  |d
-                if (this.isKeyboardActivated)
-                    this.isKeyboardActivated = false
-            }
         }, true)
         document.addEventListener("keyup", evt => {
             if (evt.which == 18) { // Alt 
                 if (this.isKeyboardActivated && this.selectedIndex == -1) 
                     this.selectedIndex = 0
+                evt.preventDefault()
+                evt.stopPropagation()
             }
         }, true)
+
+        this.addEventListener("keydown", evt => {
+            switch (evt.which) {
+                case 37: // <-
+                    this.selectedIndex--
+                    if (this.selectedIndex == -1)
+                        this.selectedIndex = this.itemCount - 1
+                    break
+                case 39: // ->
+                    this.selectedIndex++
+                    if (this.selectedIndex == this.itemCount)
+                        this.selectedIndex = 0
+                    break
+                case 40: //  |d
+                    if (this.isKeyboardActivated) {
+                        this.isKeyboardActivated = false
+                        break
+                    }
+                default: {
+                    const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+                    items.forEach(n => n.onKeyDown(evt))
+                }
+                break
+            }
+        })
     }
 
     closeMenu() {
@@ -154,10 +172,6 @@ class SubmenuComponent extends HTMLElement {
                     --menubar-hover-color: lightblue;
                     --menubar-selected-color: white;
                     --menubar-selected-background-color: blue;
-                    --menubar-color: black;
-                    --menubar-background-color: white;
-                    --menubar-border-color: lightgray;
-                    --menubar-shadow-color: rgba(0, 0, 0, 0.2);
                 }            
                 #menubarItem {
                     float: left;
@@ -178,15 +192,6 @@ class SubmenuComponent extends HTMLElement {
                 #submenu {
                     display: none;
                     position: absolute;
-                    color: var(--menubar-color);
-                    background-color: var(--menubar-background-color);
-                    z-index: 10000;
-
-                    border-color: var(--menubar-border-color);
-                    border-style: solid;
-                    border-width: 1px;
-                    white-space: nowrap;
-                    box-shadow: 2px 2px 20px 2px var(--menubar-shadow-color);
                 }
                 .selected #submenu {
                     display: block;
@@ -199,9 +204,9 @@ class SubmenuComponent extends HTMLElement {
                 <div id="header" class="submenuHeader">
                     <menubar-menuitem-component mainmenu="true" id="item"></menubar-menuitem-component>
                 </div>
-                <div id="submenu">
-                    <slot>
-                </div>
+                <menubar-submenu-list-component id="submenu">
+                    <slot id="slot">
+                </menubar-submenu-list-component>
             </li>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
@@ -210,12 +215,21 @@ class SubmenuComponent extends HTMLElement {
         this.header = this.shadowRoot.getElementById("header")
         this.item.setAttribute("text", this.getAttribute("header"))
         this.index = Number.parseInt(this.getAttribute("index"))
-        const items = Array.from(document.querySelectorAll('menubar-menuitem-component'))
-        items.forEach(n => n.classList.add("submenu-item"))
+        const slot = this.shadowRoot.getElementById("slot")
+        slot.id = `submenu-${this.index}`
+        this.submenulist = this.shadowRoot.getElementById('submenu')
+        this.submenulist.setAttribute("index", this.index)
     }
 
     static get observedAttributes() {
         return ['is-accelerated', 'is-keyboard-activated', 'selected-index']
+    }
+
+    onKeyDown(evt) {
+        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-submenu-list-component'))
+            .filter(n => window.getComputedStyle(n).display != "none")
+        if (items.length == 1)
+            items[0].onKeyDown(evt) 
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -227,8 +241,11 @@ class SubmenuComponent extends HTMLElement {
             case "selected-index":
                 if (oldValue != newValue) {
                     const selectedIndex = Number.parseInt(newValue)
-                    if (selectedIndex == this.index)
+                    if (selectedIndex == this.index) {
                         this.menubaritem.classList.add("selected")
+                        if (!this.menubaritem.classList.contains("is-keyboard-activated"))
+                            this.submenulist.resetIndex()
+                    }
                     else
                         this.menubaritem.classList.remove("selected")
                 }
@@ -237,8 +254,11 @@ class SubmenuComponent extends HTMLElement {
                 if (oldValue != newValue) {
                     if (newValue == "true")
                         this.menubaritem.classList.add("is-keyboard-activated")
-                    else
+                    else {
                         this.menubaritem.classList.remove("is-keyboard-activated")
+                        if (this.menubaritem.classList.contains("selected"))
+                            this.submenulist.resetIndex()
+                    }
                 }
                 break
         }
@@ -247,6 +267,86 @@ class SubmenuComponent extends HTMLElement {
     handleIsAccelerated(value) {
         const items = Array.from(this.shadowRoot.querySelectorAll('menubar-menuitem-component'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
+    }
+}
+
+class SubmenuListComponent extends HTMLElement {
+    constructor() {
+        super()
+        this.selectedIndex = -1
+        this.attachShadow({ mode: 'open' })
+
+        const template = document.createElement('template')
+        template.innerHTML = ` 
+            <style>
+                :host {
+                    --menubar-color: black;
+                    --menubar-background-color: white;
+                    --menubar-border-color: lightgray;
+                    --menubar-shadow-color: rgba(0, 0, 0, 0.2);
+                }
+                #submenu {
+                    color: var(--menubar-color);
+                    background-color: var(--menubar-background-color);
+                    z-index: 10000;
+
+                    border-color: var(--menubar-border-color);
+                    border-style: solid;
+                    border-width: 1px;
+                    white-space: nowrap;
+                    box-shadow: 2px 2px 20px 2px var(--menubar-shadow-color);
+                }
+            </style>
+            <div id="submenu" tabindex="-1">
+                <slot id="slot">
+            </div>
+        `
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+    }
+
+    static get observedAttributes() {
+        return ['index']
+    }
+
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        switch (attributeName) {
+            case "index":
+                this.index = newValue
+                this.menuItems = Array.from(document.querySelectorAll('menubar-menuitem-component'))
+                    .filter(n => n.assignedSlot.id == `submenu-${this.index}`)
+                this.menuItems.forEach((n, i) => {
+                    n.classList.add("submenu-item")
+                    n.setAttribute("index", i)
+                })
+                break
+        }
+    }
+
+    get selectedIndex() {
+        return this._selectedIndex
+    }
+
+    set selectedIndex(value) {
+        this._selectedIndex = value
+        if (this.menuItems)
+            this.menuItems.forEach(n => n.setAttribute("selected-index", value))
+    }
+
+    resetIndex() { this.selectedIndex = -1 }
+
+    onKeyDown(evt) {
+        switch (evt.which) {
+            case 38: //  |^
+                this.selectedIndex--
+                if (this.selectedIndex < 0)
+                    this.selectedIndex = this.menuItems.length - 1
+                break
+            case 40: //  |d
+                this.selectedIndex++
+                if (this.selectedIndex == this.menuItems.length)
+                    this.selectedIndex = 0
+                break
+        }
     }
 }
 
@@ -303,6 +403,8 @@ class MenuItemComponent extends HTMLElement {
 
 
         this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.index = Number.parseInt(this.getAttribute("index"))
+        this.menuItem = this.shadowRoot.getElementById("menuItem")
         const pretext = this.shadowRoot.getElementById("pretext")
         this.acctext = this.shadowRoot.getElementById("acctext")
         const posttext = this.shadowRoot.getElementById("posttext")
@@ -333,7 +435,7 @@ class MenuItemComponent extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['is-accelerated']
+        return ['is-accelerated', 'selected-index']
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -341,6 +443,15 @@ class MenuItemComponent extends HTMLElement {
             case "is-accelerated":
                 if (oldValue != newValue)
                     this.handleIsAccelerated(newValue)
+                break
+            case "selected-index":
+                if (oldValue != newValue) {
+                    const selectedIndex = Number.parseInt(newValue)
+                    if (selectedIndex == this.index)
+                        this.menuItem.classList.add("selected")
+                    else
+                        this.menuItem.classList.remove("selected")
+                }
                 break
         }
     }
@@ -371,11 +482,19 @@ class SeparatorComponent extends HTMLElement {
             <hr /> 
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
-        const pretext = this.shadowRoot.getElementById("pretext")
     }
 }
 
 customElements.define('menubar-component', MenubarComponent)
 customElements.define('menubar-submenu-component', SubmenuComponent)
+customElements.define('menubar-submenu-list-component', SubmenuListComponent)
 customElements.define('menubar-menuitem-component', MenuItemComponent)
 customElements.define('menubar-separator-component', SeparatorComponent)
+
+// TODO accelerated in submenu
+// TODO Click
+// TODO Checkbox
+// TODO Mouse control
+// TODO Accelerators
+// TODO Shortcuts
+// TODO Submenu 
