@@ -8,10 +8,43 @@
     <body>
         <div class="root">
             <menubar-component automode=false>
-                <menubar-submenu-component header="_Datei"></menubar-submenu-component>
-                <menubar-submenu-component header="_Navigation"></menubar-submenu-component>
-                <menubar-submenu-component header="_Selektion"></menubar-submenu-component>
-                <menubar-submenu-component header="_Ansicht"></menubar-submenu-component>
+                <menubar-submenu-component header="_Datei">
+                    <menubar-menuitem-component text="_Umbenennen"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="Er_weitertes Umbenennen"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Kopieren"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Verschieben"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Löschen"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Ordner anlegen"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Eigenschaften"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="Öffnen _mit"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Beenden"></menubar-menuitem-component>
+                </menubar-submenu-component>
+                <menubar-submenu-component header="_Navigation">
+                    <menubar-menuitem-component text="_Favoriten"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Gleichen Ordner öffnen"></menubar-menuitem-component>
+                </menubar-submenu-component>
+                <menubar-submenu-component header="_Selektion">
+                    <menubar-menuitem-component text="_Alles"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Selektion entfernen"></menubar-menuitem-component>
+                </menubar-submenu-component>
+                <menubar-submenu-component header="_Ansicht">
+                    <menubar-menuitem-component text="_Versteckte Dateien"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Aktualisieren"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Vorschau"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Themen"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Zoomlevel"></menubar-menuitem-component>
+                    <menubar-menuitem-component text="_Vollbild"></menubar-menuitem-component>
+                    <menubar-separator-component></menubar-separator-component>
+                    <menubar-menuitem-component text="_Entwicklerwerkzeuge"></menubar-menuitem-component>
+                    
+                </menubar-submenu-component>
             </menubar-component>
             <div> 
                 <h1>Menubar Component</h1>

@@ -140,16 +140,20 @@ class SubmenuComponent extends HTMLElement {
                     --menubar-hover-color: lightblue;
                     --menubar-selected-color: white;
                     --menubar-selected-background-color: blue;
+                    --menubar-color: black;
+                    --menubar-background-color: white;
+                    --menubar-border-color: lightgray;
+                    --menubar-shadow-color: rgba(0, 0, 0, 0.2);
                 }            
                 #menubarItem {
                     float: left;
                 }
-                #header.selected {
-                    color: var(--menubar-selected-color);
-                    background-color: var(--menubar-selected-background-color);
-                }
                 #header:hover {
                     background-color: var(--menubar-hover-color);
+                }
+                .selected #header {
+                    color: var(--menubar-selected-color);
+                    background-color: var(--menubar-selected-background-color);
                 }
                 .submenuHeader {
                     padding-left: 5px;
@@ -157,19 +161,41 @@ class SubmenuComponent extends HTMLElement {
                     padding-right: 5px;
                     padding-bottom: 2px;
                 }
+                #submenu {
+                    display: none;
+                    position: absolute;
+                    color: var(--menubar-color);
+                    background-color: var(--menubar-background-color);
+                    z-index: 10000;
+
+                    border-color: var(--menubar-border-color);
+                    border-style: solid;
+                    border-width: 1px;
+                    white-space: nowrap;
+                    box-shadow: 2px 2px 20px 2px var(--menubar-shadow-color);
+                }
+                .selected #submenu {
+                    display: block;
+                }
             </style>
             <li id="menubarItem">
                 <div id="header" class="submenuHeader">
-                    <menubar-menuitem-component id="item"></menubar-menuitem-component>
+                    <menubar-menuitem-component mainmenu="true" id="item"></menubar-menuitem-component>
                 </div>
-                <div>Hallo</div>
+                <div id="submenu">
+                    <slot>
+                </div>
             </li>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.menubaritem = this.shadowRoot.getElementById("menubarItem")
         this.item = this.shadowRoot.getElementById("item")
         this.header = this.shadowRoot.getElementById("header")
         this.item.setAttribute("text", this.getAttribute("header"))
         this.index = Number.parseInt(this.getAttribute("index"))
+        const items = Array.from(document.querySelectorAll('menubar-menuitem-component'))
+        console.log("Schau", items)
+        items.forEach(n => n.classList.add("submenu-item"))
     }
 
     static get observedAttributes() {
@@ -186,9 +212,9 @@ class SubmenuComponent extends HTMLElement {
                 if (oldValue != newValue) {
                     const selectedIndex = Number.parseInt(newValue)
                     if (selectedIndex == this.index)
-                        this.header.classList.add("selected")
+                        this.menubaritem.classList.add("selected")
                     else
-                    this.header.classList.remove("selected")
+                        this.menubaritem.classList.remove("selected")
                 }
                 break
         }
@@ -223,6 +249,9 @@ class MenuItemComponent extends HTMLElement {
                 .accelerated-active.accelerated {
                     text-decoration: underline;
                 }
+                .submenu-item {
+                    padding: 5px 20px 5px 0px;
+                }
             </style>
             <div id="menuItem">
                 <div id="text" class="menuitemtext">
@@ -233,7 +262,6 @@ class MenuItemComponent extends HTMLElement {
             </div>
         `
 
-    //     <div class="menuItem">
     //     <div class="menuitemtext" v-if="!menuState.accelerated && !separator">
     //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
     //         <span>{{name}}</span>
@@ -248,8 +276,6 @@ class MenuItemComponent extends HTMLElement {
     //         <span class="spacer"> </span>
     //         <span v-if='item.accelerator'>{{item.accelerator.name}}</span>
     //     </div>
-    //     <hr v-if="separator" />                
-    // </div>
 
 
         this.shadowRoot.appendChild(template.content.cloneNode(true))
@@ -260,6 +286,12 @@ class MenuItemComponent extends HTMLElement {
         pretext.innerText = textParts[0]
         this.acctext.innerText = textParts[1]
         posttext.innerText = textParts[2]
+
+        if (this.getAttribute("mainmenu") != "true") {
+            const menuItem = this.shadowRoot.getElementById("menuItem")
+            menuItem.classList.add("submenu-item")
+        }
+                    
 
         function getTextParts(text) {
             const pos = text.indexOf('_')
@@ -297,6 +329,29 @@ class MenuItemComponent extends HTMLElement {
     }
 }
 
+class SeparatorComponent extends HTMLElement {
+    constructor() {
+        super()
+        this.attachShadow({ mode: 'open' })
+
+        const template = document.createElement('template')
+        template.innerHTML = ` 
+            <style>
+                :host {
+                    --menubar-separator-color: red;
+                }
+                #hr {
+                    border:solid var(--menubar-separator-color) 0.5px
+                }
+            </style>
+            <hr /> 
+        `
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        const pretext = this.shadowRoot.getElementById("pretext")
+    }
+}
+
 customElements.define('menubar-component', MenubarComponent)
 customElements.define('menubar-submenu-component', SubmenuComponent)
 customElements.define('menubar-menuitem-component', MenuItemComponent)
+customElements.define('menubar-separator-component', SeparatorComponent)
