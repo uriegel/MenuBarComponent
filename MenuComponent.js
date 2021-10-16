@@ -118,6 +118,8 @@ class MenubarComponent extends HTMLElement {
             }
         }, true)
 
+        this.addEventListener("focusout", () => this.closeMenu())
+
         this.addEventListener("keydown", evt => {
             switch (evt.which) {
                 case 37: // <-
