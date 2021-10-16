@@ -9,6 +9,15 @@ class MenubarComponent extends HTMLElement {
         items.forEach(n => n.setAttribute("is-accelerated", value))
     }
 
+    get isKeyboardActivated()  {
+        return this._isKeyboardActivated
+    }
+    set isKeyboardActivated(value) {
+        this._isKeyboardActivated = value
+        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        items.forEach(n => n.setAttribute("is-keyboard-activated", value))
+    }
+    
     get selectedIndex()  {
         return this._selectedIndex
     }
@@ -20,6 +29,7 @@ class MenubarComponent extends HTMLElement {
     constructor() {
         super()
         this.isAccelerated = false
+        this.isKeyboardActivated = false
         this.selectedIndex = -1
         this.attachShadow({ mode: 'open' })
 
@@ -101,6 +111,10 @@ class MenubarComponent extends HTMLElement {
                 if (this.selectedIndex == this.itemCount)
                     this.selectedIndex = 0
             }
+            else if (evt.which == 40) { //  |d
+                if (this.isKeyboardActivated)
+                    this.isKeyboardActivated = false
+            }
         }, true)
         document.addEventListener("keyup", evt => {
             if (evt.which == 18) { // Alt 
@@ -177,6 +191,9 @@ class SubmenuComponent extends HTMLElement {
                 .selected #submenu {
                     display: block;
                 }
+                .is-keyboard-activated #submenu  {
+                    display: none;
+                }
             </style>
             <li id="menubarItem">
                 <div id="header" class="submenuHeader">
@@ -194,12 +211,11 @@ class SubmenuComponent extends HTMLElement {
         this.item.setAttribute("text", this.getAttribute("header"))
         this.index = Number.parseInt(this.getAttribute("index"))
         const items = Array.from(document.querySelectorAll('menubar-menuitem-component'))
-        console.log("Schau", items)
         items.forEach(n => n.classList.add("submenu-item"))
     }
 
     static get observedAttributes() {
-        return ['is-accelerated', 'selected-index']
+        return ['is-accelerated', 'is-keyboard-activated', 'selected-index']
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -215,6 +231,14 @@ class SubmenuComponent extends HTMLElement {
                         this.menubaritem.classList.add("selected")
                     else
                         this.menubaritem.classList.remove("selected")
+                }
+                break
+            case "is-keyboard-activated":
+                if (oldValue != newValue) {
+                    if (newValue == "true")
+                        this.menubaritem.classList.add("is-keyboard-activated")
+                    else
+                        this.menubaritem.classList.remove("is-keyboard-activated")
                 }
                 break
         }
