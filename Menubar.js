@@ -118,7 +118,12 @@ class Menubar extends HTMLElement {
             }
         }, true)
 
+        this.addEventListener("menubar-item-mouseover", evt => {
+            if (evt.detail.mainmenu && this.selectedIndex != -1)
+                this.selectedIndex = evt.detail.index
+        })
         this.addEventListener("menubar-clicked", evt => {
+            this.isKeyboardActivated = false
             this.selectedIndex = evt.detail.index
         })
         this.addEventListener("menubar-executed", () => this.closeMenu())
@@ -326,6 +331,12 @@ class SubmenuList extends HTMLElement {
         }
     }
 
+    connectedCallback() {
+        this.addEventListener("menubar-item-mouseover", evt => {
+            this.selectedIndex = evt.detail.index
+        })
+    }
+
     get selectedIndex() {
         return this._selectedIndex
     }
@@ -398,10 +409,6 @@ class MenuItem extends HTMLElement {
                 }
                 #menuItem.submenu-item {
                     padding: 5px 20px 5px 0px;
-                }
-                #menuItem.submenu-item:hover {
-                    background-color: var(--menubar-selected-background-color);
-                    color: var(--menubar-selected-color);
                 }
             </style>
             <div id="menuItem">
@@ -485,6 +492,14 @@ class MenuItem extends HTMLElement {
 
     connectedCallback() {
         this.addEventListener("click", () => this.executeCommand())
+        this.addEventListener("mouseover", () => this.dispatchEvent(new CustomEvent('menubar-item-mouseover', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                mainmenu: this.mainmenu,
+                index: this.index
+            }
+        })))
     }
 
     get isChecked()  {
@@ -557,8 +572,9 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Mouse control: not hovering but set selected item when mouse over
+// TODO Focus
 // TODO Accelerators
 // TODO Shortcuts
 // TODO Electron titlebar
 // TODO Submenu 
+// TODO Resize event when automode
