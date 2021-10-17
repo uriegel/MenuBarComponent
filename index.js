@@ -1,2 +1,4 @@
-import './MenuComponent.js'
+import './Menubar.js'
+import './menu.js'
 console.log("Started")
+

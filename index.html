@@ -1,53 +1,53 @@
 <html>
     <head>
-        <title>Menubar Component</title>
+        <title>Menubar</title>
         <meta charset="utf-8"/>
         <link rel="stylesheet" href="styles.css">
     </head>
 
     <body>
         <div class="root">
-            <menubar-component automode=false>
-                <menubar-submenu-component header="_Datei">
-                    <menubar-menuitem-component text="_Umbenennen"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="Er_weitertes Umbenennen"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Kopieren"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Verschieben"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Löschen"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Ordner anlegen"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Eigenschaften"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="Öffnen _mit"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Beenden"></menubar-menuitem-component>
-                </menubar-submenu-component>
-                <menubar-submenu-component header="_Navigation">
-                    <menubar-menuitem-component text="_Favoriten"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Gleichen Ordner öffnen"></menubar-menuitem-component>
-                </menubar-submenu-component>
-                <menubar-submenu-component header="_Selektion">
-                    <menubar-menuitem-component text="_Alles"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Selektion entfernen"></menubar-menuitem-component>
-                </menubar-submenu-component>
-                <menubar-submenu-component header="_Ansicht">
-                    <menubar-menuitem-component text="_Versteckte Dateien"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Aktualisieren"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Vorschau"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Themen"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Zoomlevel"></menubar-menuitem-component>
-                    <menubar-menuitem-component text="_Vollbild"></menubar-menuitem-component>
-                    <menubar-separator-component></menubar-separator-component>
-                    <menubar-menuitem-component text="_Entwicklerwerkzeuge"></menubar-menuitem-component>
+            <menubar-mainmenu automode=false>
+                <menubar-submenu header="_Datei">
+                    <menubar-menuitem text="_Umbenennen" action="onRename"></menubar-menuitem>
+                    <menubar-menuitem text="Er_weitertes Umbenennen" action="onExtendedRename"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Kopieren" action="onCopy"></menubar-menuitem>
+                    <menubar-menuitem text="_Verschieben" action="onMove"></menubar-menuitem>
+                    <menubar-menuitem text="_Löschen"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Ordner anlegen"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Eigenschaften"></menubar-menuitem>
+                    <menubar-menuitem text="Öffnen _mit"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Beenden"></menubar-menuitem>
+                </menubar-submenu>
+                <menubar-submenu header="_Navigation">
+                    <menubar-menuitem text="_Favoriten"></menubar-menuitem>
+                    <menubar-menuitem text="_Gleichen Ordner öffnen"></menubar-menuitem>
+                </menubar-submenu>
+                <menubar-submenu header="_Selektion">
+                    <menubar-menuitem text="_Alles"></menubar-menuitem>
+                    <menubar-menuitem text="_Selektion entfernen"></menubar-menuitem>
+                </menubar-submenu>
+                <menubar-submenu header="_Ansicht">
+                    <menubar-menuitem text="_Versteckte Dateien"></menubar-menuitem>
+                    <menubar-menuitem text="_Aktualisieren"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Vorschau"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Themen"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Zoomlevel"></menubar-menuitem>
+                    <menubar-menuitem text="_Vollbild"></menubar-menuitem>
+                    <menubar-separator></menubar-separator>
+                    <menubar-menuitem text="_Entwicklerwerkzeuge"></menubar-menuitem>
                     
-                </menubar-submenu-component>
-            </menubar-component>
+                </menubar-submenu>
+            </menubar-mainmenu>
             <div> 
-                <h1>Menubar Component</h1>
+                <h1>Menubar</h1>
                 <p>
                     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
                 </p>

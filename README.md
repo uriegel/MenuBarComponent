@@ -1,1 +1,1 @@
-# MenuBarComponent
+# MenuBar

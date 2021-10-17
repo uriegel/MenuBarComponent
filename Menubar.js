@@ -1,4 +1,4 @@
-class MenubarComponent extends HTMLElement {
+class Menubar extends HTMLElement {
     constructor() {
         super()
         this.isAccelerated = false
@@ -28,7 +28,7 @@ class MenubarComponent extends HTMLElement {
         this.style.outline = "none"
         this.setAttribute("tabindex", "-1")
 
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        const items = Array.from(document.querySelectorAll('menubar-submenu'))
         this.itemCount = items.length
         items.forEach((n, i) => n.setAttribute("index", i))
 
@@ -43,9 +43,9 @@ class MenubarComponent extends HTMLElement {
     }
     set isAccelerated(value) {
         this._isAccelerated = value
-        const items = Array.from(document.querySelectorAll('menubar-menuitem-component'))
+        const items = Array.from(document.querySelectorAll('menubar-menuitem'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
-        const mainitems = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        const mainitems = Array.from(document.querySelectorAll('menubar-submenu'))
         mainitems.forEach(n => n.setAttribute("is-accelerated", value))
     }
 
@@ -54,7 +54,7 @@ class MenubarComponent extends HTMLElement {
     }
     set isKeyboardActivated(value) {
         this._isKeyboardActivated = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        const items = Array.from(document.querySelectorAll('menubar-submenu'))
         items.forEach(n => n.setAttribute("is-keyboard-activated", value))
     }
     
@@ -63,7 +63,7 @@ class MenubarComponent extends HTMLElement {
     }
     set selectedIndex(value) {
         this._selectedIndex = value
-        const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+        const items = Array.from(document.querySelectorAll('menubar-submenu'))
         items.forEach(n => n.setAttribute("selected-index", value))
     }
 
@@ -119,6 +119,7 @@ class MenubarComponent extends HTMLElement {
         }, true)
 
         this.addEventListener("focusout", () => this.closeMenu())
+        this.addEventListener("menubar-executed", () => this.closeMenu())
 
         this.addEventListener("keydown", evt => {
             switch (evt.which) {
@@ -132,13 +133,15 @@ class MenubarComponent extends HTMLElement {
                     if (this.selectedIndex == this.itemCount)
                         this.selectedIndex = 0
                     break
+                case 13: // Enter
+                case 32: // Space                
                 case 40: //  |d
                     if (this.isKeyboardActivated) {
                         this.isKeyboardActivated = false
                         break
                     }
                 default: {
-                    const items = Array.from(document.querySelectorAll('menubar-submenu-component'))
+                    const items = Array.from(document.querySelectorAll('menubar-submenu'))
                     items.forEach(n => n.onKeyDown(evt))
                 }
                 break
@@ -164,7 +167,7 @@ class MenubarComponent extends HTMLElement {
     }
 }
 
-class SubmenuComponent extends HTMLElement {
+class Submenu extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' })
@@ -206,11 +209,11 @@ class SubmenuComponent extends HTMLElement {
             </style>
             <li id="menubarItem">
                 <div id="header" class="submenuHeader">
-                    <menubar-menuitem-component mainmenu="true" id="item"></menubar-menuitem-component>
+                    <menubar-menuitem mainmenu="true" id="item"></menubar-menuitem>
                 </div>
-                <menubar-submenu-list-component id="submenu">
+                <menubar-submenu-list id="submenu">
                     <slot id="slot">
-                </menubar-submenu-list-component>
+                </menubar-submenu-list>
             </li>
         `
         this.shadowRoot.appendChild(template.content.cloneNode(true))
@@ -230,7 +233,7 @@ class SubmenuComponent extends HTMLElement {
     }
 
     onKeyDown(evt) {
-        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-submenu-list-component'))
+        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-submenu-list'))
             .filter(n => window.getComputedStyle(n).display != "none")
         if (items.length == 1)
             items[0].onKeyDown(evt) 
@@ -269,12 +272,12 @@ class SubmenuComponent extends HTMLElement {
     }
 
     handleIsAccelerated(value) {
-        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-menuitem-component'))
+        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-menuitem'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
     }
 }
 
-class SubmenuListComponent extends HTMLElement {
+class SubmenuList extends HTMLElement {
     constructor() {
         super()
         this.selectedIndex = -1
@@ -316,7 +319,7 @@ class SubmenuListComponent extends HTMLElement {
         switch (attributeName) {
             case "index":
                 this.index = newValue
-                this.menuItems = Array.from(document.querySelectorAll('menubar-menuitem-component'))
+                this.menuItems = Array.from(document.querySelectorAll('menubar-menuitem'))
                     .filter(n => n.assignedSlot.id == `submenu-${this.index}`)
                 this.menuItems.forEach((n, i) => {
                     n.classList.add("submenu-item")
@@ -340,6 +343,11 @@ class SubmenuListComponent extends HTMLElement {
 
     onKeyDown(evt) {
         switch (evt.which) {
+            case 13: // Enter
+            case 32: // Space                
+                if (this.selectedIndex != -1)
+                    this.menuItems[this.selectedIndex].executeCommand()
+                break
             case 38: //  |^
                 this.selectedIndex--
                 if (this.selectedIndex < 0)
@@ -354,7 +362,7 @@ class SubmenuListComponent extends HTMLElement {
     }
 }
 
-class MenuItemComponent extends HTMLElement {
+class MenuItem extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' })
@@ -413,6 +421,7 @@ class MenuItemComponent extends HTMLElement {
         this.acctext = this.shadowRoot.getElementById("acctext")
         const posttext = this.shadowRoot.getElementById("posttext")
         const textParts = getTextParts(this.getAttribute("text"))
+        this.action = this.getAttribute("action")
         pretext.innerText = textParts[0]
         this.acctext.innerText = textParts[1]
         posttext.innerText = textParts[2]
@@ -460,6 +469,15 @@ class MenuItemComponent extends HTMLElement {
         }
     }
 
+    executeCommand() {
+        if (this.action)
+            eval(`${this.action}()`)
+        this.dispatchEvent(new CustomEvent('menubar-executed', {
+            bubbles: true,
+            composed: true
+        }))
+    }
+
     handleIsAccelerated(value) {
         if (value == "true")
             this.acctext.classList.add("accelerated-active")
@@ -468,7 +486,7 @@ class MenuItemComponent extends HTMLElement {
     }
 }
 
-class SeparatorComponent extends HTMLElement {
+class Separator extends HTMLElement {
     constructor() {
         super()
         this.attachShadow({ mode: 'open' })
@@ -489,13 +507,12 @@ class SeparatorComponent extends HTMLElement {
     }
 }
 
-customElements.define('menubar-component', MenubarComponent)
-customElements.define('menubar-submenu-component', SubmenuComponent)
-customElements.define('menubar-submenu-list-component', SubmenuListComponent)
-customElements.define('menubar-menuitem-component', MenuItemComponent)
-customElements.define('menubar-separator-component', SeparatorComponent)
+customElements.define('menubar-mainmenu', Menubar)
+customElements.define('menubar-submenu', Submenu)
+customElements.define('menubar-submenu-list', SubmenuList)
+customElements.define('menubar-menuitem', MenuItem)
+customElements.define('menubar-separator', Separator)
 
-// TODO Click
 // TODO Checkbox
 // TODO Mouse control
 // TODO Accelerators
