@@ -118,8 +118,11 @@ class Menubar extends HTMLElement {
             }
         }, true)
 
-        this.addEventListener("focusout", () => this.closeMenu())
+        this.addEventListener("menubar-clicked", evt => {
+            this.selectedIndex = evt.detail.index
+        })
         this.addEventListener("menubar-executed", () => this.closeMenu())
+        this.addEventListener("focusout", () => this.closeMenu())
 
         this.addEventListener("keydown", evt => {
             switch (evt.which) {
@@ -190,12 +193,6 @@ class Submenu extends HTMLElement {
                     color: var(--menubar-selected-color);
                     background-color: var(--menubar-selected-background-color);
                 }
-                .submenuHeader {
-                    padding-left: 5px;
-                    padding-top: 2px;
-                    padding-right: 5px;
-                    padding-bottom: 2px;
-                }
                 #submenu {
                     display: none;
                     position: absolute;
@@ -208,7 +205,7 @@ class Submenu extends HTMLElement {
                 }
             </style>
             <li id="menubarItem">
-                <div id="header" class="submenuHeader">
+                <div id="header">
                     <menubar-menuitem mainmenu="true" id="item"></menubar-menuitem>
                 </div>
                 <menubar-submenu-list id="submenu">
@@ -219,9 +216,9 @@ class Submenu extends HTMLElement {
         this.shadowRoot.appendChild(template.content.cloneNode(true))
         this.menubaritem = this.shadowRoot.getElementById("menubarItem")
         this.item = this.shadowRoot.getElementById("item")
-        this.header = this.shadowRoot.getElementById("header")
-        this.item.setAttribute("text", this.getAttribute("header"))
         this.index = Number.parseInt(this.getAttribute("index"))
+        this.item.setAttribute("text", this.getAttribute("header"))
+        this.item.setAttribute("index", this.index)
         const slot = this.shadowRoot.getElementById("slot")
         slot.id = `submenu-${this.index}`
         this.submenulist = this.shadowRoot.getElementById('submenu')
@@ -396,8 +393,15 @@ class MenuItem extends HTMLElement {
                 .accelerated-active.accelerated {
                     text-decoration: underline;
                 }
-                .submenu-item {
+                #menuItem {
+                    padding: 2px 5px;
+                }
+                #menuItem.submenu-item {
                     padding: 5px 20px 5px 0px;
+                }
+                #menuItem.submenu-item:hover {
+                    background-color: var(--menubar-selected-background-color);
+                    color: var(--menubar-selected-color);
                 }
             </style>
             <div id="menuItem">
@@ -438,10 +442,10 @@ class MenuItem extends HTMLElement {
         const menuItem = this.shadowRoot.getElementById("menuItem")
         if (this.isCheckbox)
             menuItem.classList.add("checkbox")
-        if (this.getAttribute("mainmenu") != "true") 
+        this.mainmenu = this.getAttribute("mainmenu") == "true"        
+        if (!this.mainmenu) 
             menuItem.classList.add("submenu-item")
-                            
-
+                         
         function getTextParts(text) {
             const pos = text.indexOf('_')
             if (pos == -1) 
@@ -479,6 +483,10 @@ class MenuItem extends HTMLElement {
         }
     }
 
+    connectedCallback() {
+        this.addEventListener("click", () => this.executeCommand())
+    }
+
     get isChecked()  {
         return this._isChecked
     }
@@ -491,22 +499,28 @@ class MenuItem extends HTMLElement {
     }
 
     executeCommand() {
-        if (!this.isCheckbox) {
-            if (this.action)
-                eval(`${this.action}()`)
+        if (this.mainmenu) {
+            this.dispatchEvent(new CustomEvent('menubar-clicked', {
+                bubbles: true,
+                composed: true,
+                detail: { index: this.index }
+            }))
         } else {
-            this.isChecked = !this.isChecked
-            if (this.action)
-                eval(`${this.action}(${this.isChecked})`)
-        }
-        
-        this.dispatchEvent(new CustomEvent('menubar-executed', {
-            bubbles: true,
-            composed: true
-        }))
-    }
+            this.dispatchEvent(new CustomEvent('menubar-executed', {
+                bubbles: true,
+                composed: true
+            }))
 
-    setIsChecked
+            if (!this.isCheckbox) {
+                if (this.action)
+                    eval(`${this.action}()`)
+            } else {
+                this.isChecked = !this.isChecked
+                if (this.action)
+                    eval(`${this.action}(${this.isChecked})`)
+            }
+        }
+    }
 
     handleIsAccelerated(value) {
         if (value == "true")
@@ -543,7 +557,8 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Mouse control
+// TODO Mouse control: not hovering but set selected item when mouse over
 // TODO Accelerators
 // TODO Shortcuts
+// TODO Electron titlebar
 // TODO Submenu 
