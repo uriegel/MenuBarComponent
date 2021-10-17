@@ -382,6 +382,17 @@ class MenuItem extends HTMLElement {
                     background-color: var(--menubar-selected-background-color);
                     color: var(--menubar-selected-color);
                 }
+                .selector {
+                    display: none;
+                }                
+                .submenu-item .selector {
+                    display: inline-block;
+                    opacity: 0;
+                    padding: 0px 7px;
+                }                
+                .submenu-item.checkbox.is-checked .selector {
+                    opacity: 1;
+                }                
                 .accelerated-active.accelerated {
                     text-decoration: underline;
                 }
@@ -391,6 +402,7 @@ class MenuItem extends HTMLElement {
             </style>
             <div id="menuItem">
                 <div id="text" class="menuitemtext">
+                    <span class="selector">✓</span>
                     <div>
                         <span id="pretext"></span><span id="acctext" class="accelerated"></span><span id="posttext"></span>
                     </div>
@@ -398,12 +410,6 @@ class MenuItem extends HTMLElement {
             </div>
         `
 
-    //     <div class="menuitemtext" v-if="!menuState.accelerated && !separator">
-    //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
-    //         <span>{{name}}</span>
-    //         <span class="spacer"> </span>
-    //         <span v-if='item.accelerator'>{{item.accelerator.name}}</span>
-    //     </div>
     //     <div class="menuitemtext" v-if="menuState.accelerated && !separator">
     //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
     //         <div>
@@ -425,12 +431,13 @@ class MenuItem extends HTMLElement {
         pretext.innerText = textParts[0]
         this.acctext.innerText = textParts[1]
         posttext.innerText = textParts[2]
-
-        if (this.getAttribute("mainmenu") != "true") {
-            const menuItem = this.shadowRoot.getElementById("menuItem")
+        this.isCheckbox = this.getAttribute("checkbox") != null
+        const menuItem = this.shadowRoot.getElementById("menuItem")
+        if (this.isCheckbox)
+            menuItem.classList.add("checkbox")
+        if (this.getAttribute("mainmenu") != "true") 
             menuItem.classList.add("submenu-item")
-        }
-                    
+                            
 
         function getTextParts(text) {
             const pos = text.indexOf('_')
@@ -470,8 +477,17 @@ class MenuItem extends HTMLElement {
     }
 
     executeCommand() {
-        if (this.action)
-            eval(`${this.action}()`)
+        if (!this.isCheckbox) {
+            if (this.action)
+                eval(`${this.action}()`)
+        } else {
+
+            // TODO Checkbox isChecked attribute with class is-checked set
+            // TODO Checkbox initial isChecked callback, also during liftime
+            if (this.action)
+                eval(`${this.action}()`)
+        }
+        
         this.dispatchEvent(new CustomEvent('menubar-executed', {
             bubbles: true,
             composed: true
@@ -513,7 +529,6 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Checkbox
 // TODO Mouse control
 // TODO Accelerators
 // TODO Shortcuts
