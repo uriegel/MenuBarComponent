@@ -74,10 +74,6 @@ class Menubar extends HTMLElement {
                     this.menubar.classList.remove("invisible")
                 else
                     this.menubar.classList.add("invisible")
-                // setTimeout(() => {
-                //     this.$el.style.setProperty('--vue-menu-submenu-top', `${this.$el.children[0].clientHeight}px`)
-                //     this.$emit('resize')
-                // })
                 evt.preventDefault()
                 evt.stopPropagation()
             }            
@@ -125,7 +121,6 @@ class Menubar extends HTMLElement {
         this.addEventListener("menubar-item-mousedown", () => {
             if (!this.lastActive)
                 this.lastActive = document.activeElement
-            console.log("this.lastActive", this.lastActive)
         })
         this.addEventListener("menubar-clicked", evt => {
             this.isKeyboardActivated = false
@@ -140,17 +135,23 @@ class Menubar extends HTMLElement {
                     this.selectedIndex--
                     if (this.selectedIndex == -1)
                         this.selectedIndex = this.itemCount - 1
+                    evt.preventDefault()
+                    evt.stopPropagation()
                     break
                 case 39: // ->
                     this.selectedIndex++
                     if (this.selectedIndex == this.itemCount)
                         this.selectedIndex = 0
+                    evt.preventDefault()
+                    evt.stopPropagation()
                     break
                 case 13: // Enter
                 case 32: // Space                
                 case 40: //  |d
                     if (this.isKeyboardActivated) {
                         this.isKeyboardActivated = false
+                        evt.preventDefault()
+                        evt.stopPropagation()
                         break
                     }
                 default: {
@@ -282,6 +283,7 @@ class Submenu extends HTMLElement {
     handleIsAccelerated(value) {
         const items = Array.from(this.shadowRoot.querySelectorAll('menubar-menuitem'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
+        this.submenulist.setAttribute("is-accelerated", value)
     }
 }
 
@@ -320,7 +322,7 @@ class SubmenuList extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['index']
+        return ['index', 'is-accelerated']
     }
 
     attributeChangedCallback(attributeName, oldValue, newValue) {
@@ -333,6 +335,11 @@ class SubmenuList extends HTMLElement {
                     n.classList.add("submenu-item")
                     n.setAttribute("index", i)
                 })
+                setTimeout(() => this.mnemonics = this.menuItems.map(n => n.getMnemonic()).map((n, i) => ({key: n, index: i})))
+                break
+            case "is-accelerated":
+                if (oldValue != newValue)
+                    this.isAccelerated = newValue == "true"
                 break
         }
     }
@@ -361,16 +368,49 @@ class SubmenuList extends HTMLElement {
             case 32: // Space                
                 if (this.selectedIndex != -1)
                     this.menuItems[this.selectedIndex].executeCommand()
+                this.keyIndex = 0
+                this.lastKey = null
+                evt.preventDefault()
+                evt.stopPropagation()
                 break
             case 38: //  |^
                 this.selectedIndex--
                 if (this.selectedIndex < 0)
                     this.selectedIndex = this.menuItems.length - 1
+                evt.preventDefault()
+                evt.stopPropagation()
                 break
             case 40: //  |d
                 this.selectedIndex++
                 if (this.selectedIndex == this.menuItems.length)
                     this.selectedIndex = 0
+                evt.preventDefault()
+                evt.stopPropagation()
+                break
+            default:
+                if (this.isAccelerated) {
+                    const items = this.mnemonics.filter(n => n.key == evt.key).map(n => n.index)
+                    if (items.length == 1) {
+                        this.menuItems[items[0]].executeCommand()
+                        evt.preventDefault()
+                        evt.stopPropagation()
+                    } else if (items.length > 1) {
+                        if (this.lastKey != evt.key) {
+                            this.lastKey = evt.key
+                            this.keyIndex = 0
+                        }
+                        else {
+                            this.keyIndex++
+                            if (this.keyIndex >= items.length)
+                                this.keyIndex = 0
+                        }
+                        this.selectedIndex = items[this.keyIndex]
+                        evt.preventDefault()
+                        evt.stopPropagation()
+                    }
+                    if (this.lastKey != evt.key)
+                        this.lastKey = evt.key
+                }
                 break
         }
     }
@@ -421,7 +461,7 @@ class MenuItem extends HTMLElement {
                 <div id="text" class="menuitemtext">
                     <span class="selector">✓</span>
                     <div>
-                        <span id="pretext"></span><span id="acctext" class="accelerated"></span><span id="posttext"></span>
+                        <span id="pretext"></span><span id="mnemonictext" class="accelerated"></span><span id="posttext"></span>
                     </div>
                 </div>
             </div>
@@ -441,7 +481,7 @@ class MenuItem extends HTMLElement {
         this.index = Number.parseInt(this.getAttribute("index"))
         this.menuItem = this.shadowRoot.getElementById("menuItem")
         const pretext = this.shadowRoot.getElementById("pretext")
-        this.acctext = this.shadowRoot.getElementById("acctext")
+        this.mnemonicText = this.shadowRoot.getElementById("mnemonictext")
         const posttext = this.shadowRoot.getElementById("posttext")
         const textParts = getTextParts(this.getAttribute("text"))
         this.action = this.getAttribute("action")
@@ -449,7 +489,7 @@ class MenuItem extends HTMLElement {
         if (setChecked)
             setTimeout(() => eval(`${setChecked}(this)`))
         pretext.innerText = textParts[0]
-        this.acctext.innerText = textParts[1]
+        this.mnemonicText.innerText = textParts[1]
         posttext.innerText = textParts[2]
         this.isCheckbox = this.getAttribute("checkbox") != null
         const menuItem = this.shadowRoot.getElementById("menuItem")
@@ -525,6 +565,10 @@ class MenuItem extends HTMLElement {
             this.menuItem.classList.remove("is-checked")
     }
 
+    getMnemonic() {
+        return this.mnemonicText.innerText ? this.mnemonicText.innerText.toLowerCase() : null
+    }
+
     executeCommand() {
         if (this.mainmenu) {
             this.dispatchEvent(new CustomEvent('menubar-clicked', {
@@ -550,10 +594,10 @@ class MenuItem extends HTMLElement {
     }
 
     handleIsAccelerated(value) {
-        if (value == "true")
-            this.acctext.classList.add("accelerated-active")
-        else
-            this.acctext.classList.remove("accelerated-active")
+        if (value == "true") 
+            this.mnemonicText.classList.add("accelerated-active")
+        else 
+            this.mnemonicText.classList.remove("accelerated-active")
     }
 }
 
@@ -584,7 +628,7 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Accelerators
+// TODO Mnemonics in main menu
 // TODO Shortcuts
 // TODO Electron titlebar
 // TODO Submenu 
