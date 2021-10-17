@@ -31,9 +31,12 @@ class Menubar extends HTMLElement {
         const items = Array.from(document.querySelectorAll('menubar-submenu'))
         this.itemCount = items.length
         items.forEach((n, i) => n.setAttribute("index", i))
-        const headers = items.map(n => n.getAttribute("header"))
-        console.log("headers", headers)
-        // TODO parse mnemonics with indexes
+        this.mnemonics = items.map((n, i) => {
+            const header = n.getAttribute("header")
+            const pos = header.indexOf('_')
+            const key = pos != -1 ? header[pos + 1].toLowerCase() : null
+            return ({key, index: i})
+        })
 
         this.menubar = this.shadowRoot.querySelector('ul')
         this.autoMode = this.getAttribute("automode") == "true"
@@ -157,6 +160,16 @@ class Menubar extends HTMLElement {
                         break
                     }
                 default: {
+                    if (this.isAccelerated) {
+                        const items = this.mnemonics.filter(n => n.key == evt.key).map(n => n.index)
+                        if (items.length > 0) {
+                            this.selectedIndex = items[0]
+                            this.isKeyboardActivated = false
+                            evt.preventDefault()
+                            evt.stopPropagation()
+                            break
+                        }
+                    }
                     const items = Array.from(document.querySelectorAll('menubar-submenu'))
                     items.forEach(n => n.onKeyDown(evt))
                 }
@@ -637,8 +650,6 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Electron titlebar
-// TODO Mnemonics in main menu
 // TODO Shortcuts
 // TODO Submenu 
 // TODO Resize event when automode
