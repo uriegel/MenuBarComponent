@@ -31,6 +31,9 @@ class Menubar extends HTMLElement {
         const items = Array.from(document.querySelectorAll('menubar-submenu'))
         this.itemCount = items.length
         items.forEach((n, i) => n.setAttribute("index", i))
+        const headers = items.map(n => n.getAttribute("header"))
+        console.log("headers", headers)
+        // TODO parse mnemonics with indexes
 
         this.menubar = this.shadowRoot.querySelector('ul')
         this.autoMode = this.getAttribute("automode") == "true"
@@ -77,16 +80,15 @@ class Menubar extends HTMLElement {
                 evt.preventDefault()
                 evt.stopPropagation()
             }            
-            // if (this.menuState.isKeyboardActivated) {
-            //     const hits = parseShortcuts(this.shortcuts, evt.key)
+            if (this.isKeyboardActivated) {
+            //    const hits = parseShortcuts(this.shortcuts, evt.key)
             //     if (hits.length > 0) {
             //         this.menuState.selectedIndex = hits[0]
             //         this.menuState.isKeyboardActivated = false
             //         evt.preventDefault()
             //         evt.stopPropagation()
             //     }
-            // }
-
+            }
             if (evt.which == 18 && !evt.repeat && evt.code == "AltLeft") { // Alt 
                 if (this.isAccelerated) {
                     this.closeMenu()
@@ -628,8 +630,8 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
+// TODO Electron titlebar
 // TODO Mnemonics in main menu
 // TODO Shortcuts
-// TODO Electron titlebar
 // TODO Submenu 
 // TODO Resize event when automode
