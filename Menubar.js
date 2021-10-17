@@ -100,7 +100,7 @@ class Menubar extends HTMLElement {
                     if (this.selectedIndex == -1)
                         this.isKeyboardActivated = true
                     this.isAccelerated = true
-                    //this.menuState.lastActive = document.activeElement
+                    this.lastActive = document.activeElement
                     this.focus()
                 }
                 evt.preventDefault()
@@ -121,6 +121,11 @@ class Menubar extends HTMLElement {
         this.addEventListener("menubar-item-mouseover", evt => {
             if (evt.detail.mainmenu && this.selectedIndex != -1)
                 this.selectedIndex = evt.detail.index
+        })
+        this.addEventListener("menubar-item-mousedown", () => {
+            if (!this.lastActive)
+                this.lastActive = document.activeElement
+            console.log("this.lastActive", this.lastActive)
         })
         this.addEventListener("menubar-clicked", evt => {
             this.isKeyboardActivated = false
@@ -160,8 +165,9 @@ class Menubar extends HTMLElement {
     closeMenu() {
         this.stopKeyboardActivated()
         this.selectedIndex = -1
-        // if (this.menuState.lastActive)
-        //     this.menuState.lastActive.focus()
+        if (this.lastActive)
+            this.lastActive.focus()
+        this.lastActive = null
         if (!this.menubar.classList.contains("invisible")) {
             if (this.autoMode)
                 this.menubar.classList.add("invisible")
@@ -492,6 +498,12 @@ class MenuItem extends HTMLElement {
 
     connectedCallback() {
         this.addEventListener("click", () => this.executeCommand())
+
+        this.addEventListener("mousedown", () => this.dispatchEvent(new CustomEvent('menubar-item-mousedown', {
+            bubbles: true,
+            composed: true
+        })))
+
         this.addEventListener("mouseover", () => this.dispatchEvent(new CustomEvent('menubar-item-mouseover', {
             bubbles: true,
             composed: true,
@@ -572,7 +584,6 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Focus
 // TODO Accelerators
 // TODO Shortcuts
 // TODO Electron titlebar
