@@ -9,40 +9,40 @@
         <div class="root">
             <menubar-mainmenu automode=false>
                 <menubar-submenu header="_Datei">
-                    <menubar-menuitem text="_Umbenennen" action="onRename"></menubar-menuitem>
-                    <menubar-menuitem text="Er_weitertes Umbenennen" action="onExtendedRename"></menubar-menuitem>
+                    <menubar-menuitem text="_Umbenennen" action="onRename" shortcut="F2"></menubar-menuitem>
+                    <menubar-menuitem text="Er_weitertes Umbenennen" action="onExtendedRename" shortcut="Strg+F2"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Kopieren" action="onCopy"></menubar-menuitem>
-                    <menubar-menuitem text="_Verschieben" action="onMove"></menubar-menuitem>
-                    <menubar-menuitem text="_Löschen"></menubar-menuitem>
+                    <menubar-menuitem text="_Kopieren" action="onCopy" shortcut="F5"></menubar-menuitem>
+                    <menubar-menuitem text="_Verschieben" action="onMove" shortcut="F6"></menubar-menuitem>
+                    <menubar-menuitem text="_Löschen" shortcut="Entf"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Ordner anlegen"></menubar-menuitem>
+                    <menubar-menuitem text="_Ordner anlegen" shortcut="F7"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Eigenschaften"></menubar-menuitem>
-                    <menubar-menuitem text="Öffnen _mit"></menubar-menuitem>
+                    <menubar-menuitem text="_Eigenschaften" shortcut="Alt+Enter"></menubar-menuitem>
+                    <menubar-menuitem text="Öffnen _mit" shortcut="Strg+Enter"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Beenden"></menubar-menuitem>
+                    <menubar-menuitem text="_Beenden" shortcut="Alt+F4"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Navigation">
-                    <menubar-menuitem text="_Favoriten"></menubar-menuitem>
-                    <menubar-menuitem text="_Gleichen Ordner öffnen"></menubar-menuitem>
+                    <menubar-menuitem text="_Favoriten" shortcut="F1"></menubar-menuitem>
+                    <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Selektion">
-                    <menubar-menuitem text="_Alles"></menubar-menuitem>
-                    <menubar-menuitem text="_Selektion entfernen"></menubar-menuitem>
+                    <menubar-menuitem text="_Alles" shortcut="Num+"></menubar-menuitem>
+                    <menubar-menuitem text="_Selektion entfernen" shortcut="Num-"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Ansicht">
-                    <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" setChecked="setHidden"></menubar-menuitem>
-                    <menubar-menuitem text="_Aktualisieren"></menubar-menuitem>
+                    <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" setChecked="setHidden" shortcut="Strg+H"></menubar-menuitem>
+                    <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Vorschau"></menubar-menuitem>
+                    <menubar-menuitem text="_Vorschau" shortcut="Strg+F3"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="Themen"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="_Zoomlevel"></menubar-menuitem>
-                    <menubar-menuitem text="_Vollbild"></menubar-menuitem>
+                    <menubar-menuitem text="_Vollbild" shortcut="Strg+F11"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Entwicklerwerkzeuge" checkbox action="onDevTools"></menubar-menuitem>
+                    <menubar-menuitem text="_Entwicklerwerkzeuge" checkbox action="onDevTools" shortcut="Strg+F12"></menubar-menuitem>
                     
                 </menubar-submenu>
             </menubar-mainmenu>

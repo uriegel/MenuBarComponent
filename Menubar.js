@@ -83,15 +83,6 @@ class Menubar extends HTMLElement {
                 evt.preventDefault()
                 evt.stopPropagation()
             }            
-            if (this.isKeyboardActivated) {
-            //    const hits = parseShortcuts(this.shortcuts, evt.key)
-            //     if (hits.length > 0) {
-            //         this.menuState.selectedIndex = hits[0]
-            //         this.menuState.isKeyboardActivated = false
-            //         evt.preventDefault()
-            //         evt.stopPropagation()
-            //     }
-            }
             if (evt.which == 18 && !evt.repeat && evt.code == "AltLeft") { // Alt 
                 if (this.isAccelerated) {
                     this.closeMenu()
@@ -468,6 +459,10 @@ class MenuItem extends HTMLElement {
                 }                
                 .submenu-item.checkbox.is-checked .selector {
                     opacity: 1;
+                }
+                .submenu-item .spacer {
+                    flex-grow: 1;
+                    min-width: 20px;
                 }                
                 .accelerated-active.accelerated {
                     text-decoration: underline;
@@ -485,19 +480,11 @@ class MenuItem extends HTMLElement {
                     <div>
                         <span id="pretext"></span><span id="mnemonictext" class="accelerated"></span><span id="posttext"></span>
                     </div>
+                    <span class="spacer"> </span>
+                    <span id="shortcut"></span>
                 </div>
             </div>
         `
-
-    //     <div class="menuitemtext" v-if="menuState.accelerated && !separator">
-    //         <span class="selector" :class="{ 'isSelected': isSelected }">✓</span>
-    //         <div>
-    //             <span>{{pre}}</span><span class="accelerated">{{acc}}</span><span>{{post}}</span>
-    //         </div>
-    //         <span class="spacer"> </span>
-    //         <span v-if='item.accelerator'>{{item.accelerator.name}}</span>
-    //     </div>
-
 
         this.shadowRoot.appendChild(template.content.cloneNode(true))
         this.index = Number.parseInt(this.getAttribute("index"))
@@ -520,6 +507,8 @@ class MenuItem extends HTMLElement {
         this.mainmenu = this.getAttribute("mainmenu") == "true"        
         if (!this.mainmenu) 
             menuItem.classList.add("submenu-item")
+        const shortcut = this.shadowRoot.getElementById("shortcut")
+        shortcut.innerText = this.getAttribute("shortcut")
                          
         function getTextParts(text) {
             const pos = text.indexOf('_')
@@ -650,6 +639,6 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Shortcuts
-// TODO Submenu 
+// TODO Shortcuts parsing
+// TODO Submenu zoom-level
 // TODO Resize event when automode
