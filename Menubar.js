@@ -428,6 +428,9 @@ class MenuItem extends HTMLElement {
         const posttext = this.shadowRoot.getElementById("posttext")
         const textParts = getTextParts(this.getAttribute("text"))
         this.action = this.getAttribute("action")
+        const setChecked = this.getAttribute("setChecked")
+        if (setChecked)
+            setTimeout(() => eval(`${setChecked}(this)`))
         pretext.innerText = textParts[0]
         this.acctext.innerText = textParts[1]
         posttext.innerText = textParts[2]
@@ -476,16 +479,25 @@ class MenuItem extends HTMLElement {
         }
     }
 
+    get isChecked()  {
+        return this._isChecked
+    }
+    set isChecked(value) {
+        this._isChecked = value
+        if (this.isChecked)
+            this.menuItem.classList.add("is-checked")
+        else
+            this.menuItem.classList.remove("is-checked")
+    }
+
     executeCommand() {
         if (!this.isCheckbox) {
             if (this.action)
                 eval(`${this.action}()`)
         } else {
-
-            // TODO Checkbox isChecked attribute with class is-checked set
-            // TODO Checkbox initial isChecked callback, also during liftime
+            this.isChecked = !this.isChecked
             if (this.action)
-                eval(`${this.action}()`)
+                eval(`${this.action}(${this.isChecked})`)
         }
         
         this.dispatchEvent(new CustomEvent('menubar-executed', {
@@ -493,6 +505,8 @@ class MenuItem extends HTMLElement {
             composed: true
         }))
     }
+
+    setIsChecked
 
     handleIsAccelerated(value) {
         if (value == "true")

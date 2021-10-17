@@ -32,7 +32,7 @@
                     <menubar-menuitem text="_Selektion entfernen"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Ansicht">
-                    <menubar-menuitem text="_Versteckte Dateien" checkbox></menubar-menuitem>
+                    <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" setChecked="setHidden"></menubar-menuitem>
                     <menubar-menuitem text="_Aktualisieren"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="_Vorschau"></menubar-menuitem>
@@ -42,7 +42,7 @@
                     <menubar-menuitem text="_Zoomlevel"></menubar-menuitem>
                     <menubar-menuitem text="_Vollbild"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Entwicklerwerkzeuge" checkbox></menubar-menuitem>
+                    <menubar-menuitem text="_Entwicklerwerkzeuge" checkbox action="onDevTools"></menubar-menuitem>
                     
                 </menubar-submenu>
             </menubar-mainmenu>
