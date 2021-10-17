@@ -199,6 +199,13 @@ class Submenu extends HTMLElement {
                 }            
                 #menubarItem {
                     float: left;
+                    align-items: center;
+                    height: 100%;
+                }
+                #header {
+                    height: 100%;
+                    display: flex;
+                    align-items: inherit;                    
                 }
                 #header:hover {
                     background-color: var(--menubar-hover-color);
