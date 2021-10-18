@@ -1,6 +1,20 @@
 class Menubar extends HTMLElement {
     constructor() {
         super()
+
+        var style = document.createElement("style")
+        document.head.appendChild(style)
+        style.sheet.insertRule(`:root {
+            --menubar-color: black;
+            --menubar-background-color: white;
+            --menubar-hover-color: lightblue;
+            --menubar-selected-color: white;
+            --menubar-selected-background-color: blue;
+            --menubar-border-color: lightgray;
+            --menubar-separator-color: lightgray;
+            --menubar-shadow-color: rgba(0, 0, 0, 0.2);
+        }`)
+
         this.isAccelerated = false
         this.isKeyboardActivated = false
         this.selectedIndex = -1
@@ -249,11 +263,6 @@ class Submenu extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
-                :host {
-                    --menubar-hover-color: lightblue;
-                    --menubar-selected-color: white;
-                    --menubar-selected-background-color: blue;
-                }            
                 #menubarItem {
                     float: left;
                     align-items: center;
@@ -362,12 +371,6 @@ class SubmenuList extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
-                :host {
-                    --menubar-color: black;
-                    --menubar-background-color: white;
-                    --menubar-border-color: lightgray;
-                    --menubar-shadow-color: rgba(0, 0, 0, 0.2);
-                }
                 #submenu {
                     color: var(--menubar-color);
                     background-color: var(--menubar-background-color);
@@ -490,11 +493,6 @@ class MenuItem extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
-                :host {
-                    --menubar-hover-color: lightblue;
-                    --menubar-selected-color: white;
-                    --menubar-selected-background-color: blue;
-                }            
                 .menuitemtext {
                     display: flex;
                 }
@@ -673,11 +671,9 @@ class Separator extends HTMLElement {
         const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
-                :host {
-                    --menubar-separator-color: red;
-                }
-                #hr {
-                    border:solid var(--menubar-separator-color) 0.5px
+                hr {
+                    border:solid var(--menubar-separator-color) 0.5px;
+                    border-top-style: hidden;
                 }
             </style>
             <hr /> 

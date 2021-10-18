@@ -1,0 +1,13 @@
+:root .darkTheme {
+    background-color: var(--menubar-background-color);
+    color: var(--menubar-color);
+
+    --menubar-color: white;
+    --menubar-background-color: #2f2f2f; 
+    --menubar-hover-color: darkblue;
+    --menubar-selected-color: white;
+    --menubar-selected-background-color: blue;
+    --menubar-border-color: rgb(70, 70, 70);
+    --menubar-shadow-color: rgba(148, 148, 148, 0.2);
+    --menubar-separator-color: rgb(70, 70, 70);
+}
