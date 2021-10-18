@@ -42,6 +42,7 @@ class Menubar extends HTMLElement {
         this.autoMode = this.getAttribute("automode") == "true"
         if (this.autoMode)
             this.menubar.classList.add("invisible")
+        this.getShortcuts()
     }
 
     get isAccelerated()  {
@@ -100,6 +101,8 @@ class Menubar extends HTMLElement {
             }
             else if (evt.which == 27) // ESC
                 this.closeMenu()
+            else
+                this.checkShortcut(evt)
         }, true)
         document.addEventListener("keyup", evt => {
             if (evt.which == 18) { // Alt 
@@ -185,6 +188,56 @@ class Menubar extends HTMLElement {
     stopKeyboardActivated() {
         this.isKeyboardActivated = false
         this.isAccelerated = false
+    }
+
+    getShortcuts() {
+        const getShortcut = text => {
+
+            const getKey = k => k.length == 1 ? k.toLowerCase() : k
+
+            if (!text)
+                return  null
+            var parts = text.split("+")
+            if (parts.length == 1)
+                return {
+                    ctrl: false,
+                    shift: false,
+                    alt: false,
+                    val: getKey(parts[0])
+                }
+            else
+                return {
+                    ctrl: parts[0] == "Strg" || parts[0] == "Ctrl",
+                    shift: parts[0] == "Shift",
+                    alt: parts[0] == "Alt",
+                    val: getKey(parts[1])
+                }
+        }
+
+        const items = Array.from(document.querySelectorAll('menubar-menuitem'))
+            .map(n => ({ shortcut: getShortcut(n.getAttribute("shortcut")), menuitem: n }))
+            .filter(n => n.shortcut)
+
+        this.shortcuts = new Map()
+        items.forEach(i => {
+            const list = this.shortcuts.get(i.shortcut.val)
+            if (list)
+                this.shortcuts.set(i.shortcut.val, [...list, i])
+            else
+                this.shortcuts.set(i.shortcut.val, [i])
+        })
+    }
+
+    checkShortcut(evt) {
+        const shortcuts = this.shortcuts.get(evt.key)
+        if (shortcuts) {
+            const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n.shortcut.alt == evt.altKey)
+            if (shortcut.length == 1) {
+                shortcut[0].menuitem.executeCommand()
+                evt.preventDefault()
+                evt.stopPropagation()
+            }
+        }
     }
 }
 
@@ -639,6 +692,5 @@ customElements.define('menubar-submenu-list', SubmenuList)
 customElements.define('menubar-menuitem', MenuItem)
 customElements.define('menubar-separator', Separator)
 
-// TODO Shortcuts parsing
 // TODO Submenu zoom-level
 // TODO Resize event when automode

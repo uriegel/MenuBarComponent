@@ -25,3 +25,5 @@ window.setHidden = mi => setHiddenCallback(isChecked => mi.isChecked = isChecked
 window.onDevTools = isChecked => {
     console.log(`Dev tools ${isChecked}`)
 }
+
+window.onClose = () => close()
