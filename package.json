@@ -24,5 +24,10 @@
   "bugs": {
     "url": "https://github.com/uriegel/web-menu-bar/issues"
   },
-  "homepage": "https://github.com/uriegel/web-menu-bar#readme"
+  "homepage": "https://github.com/uriegel/web-menu-bar#readme",
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "webpack": "^5.59.1",
+    "webpack-cli": "^4.9.1"
+  }
 }
