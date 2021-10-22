@@ -512,6 +512,7 @@ class MenuItem extends HTMLElement {
             <style>
                 .menuitemtext {
                     display: flex;
+                    flex-grow: 1;
                 }
                 #menuItem.selected {
                     background-color: var(--menubar-selected-background-color);
