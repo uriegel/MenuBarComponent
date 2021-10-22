@@ -1,2 +1,5 @@
 test/bin
 test/obj
+node_modules
+package-lock.json
+dist
