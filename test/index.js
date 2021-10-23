@@ -1,4 +1,4 @@
-import '../src/Menubar.js'
+import '../src/index.js'
 import './menu.js'
 console.log("Started")
 
