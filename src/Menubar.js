@@ -54,10 +54,30 @@ export class Menubar extends HTMLElement {
         })
 
         this.menubar = this.shadowRoot.querySelector('ul')
-        this.autoMode = this.getAttribute("automode") == "true"
-        if (this.autoMode)
-            this.menubar.classList.add("invisible")
+        this.setAutoMode(this.getAttribute("automode") == "true")
         this.getShortcuts()
+    }
+
+    static get observedAttributes() {
+        return ['automode']
+    }
+
+    attributeChangedCallback(attributeName, oldValue, newValue) {
+        switch (attributeName) {
+            case "automode":
+                if (oldValue != newValue)
+                    this.setAutoMode(newValue == "true")
+                break
+        }
+    }
+
+    setAutoMode(automode) {
+        this.autoMode = automode
+        if (automode) 
+            this.menubar.classList.add("invisible")
+        else
+            this.menubar.classList.remove("invisible")
+        this.dispatchEvent(new CustomEvent('resize'))
     }
 
     get isAccelerated()  {
@@ -92,8 +112,10 @@ export class Menubar extends HTMLElement {
     connectedCallback() {
         document.addEventListener("keydown", evt => {
             if (this.autoMode && evt.keyCode == 18) { // alt
-                if (this.menubar.classList.contains("invisible"))
+                if (this.menubar.classList.contains("invisible")) {
                     this.menubar.classList.remove("invisible")
+                    this.dispatchEvent(new CustomEvent('resize'))
+                }
                 else
                     this.menubar.classList.add("invisible")
                 evt.preventDefault()
@@ -133,7 +155,7 @@ export class Menubar extends HTMLElement {
                 this.selectedIndex = evt.detail.index
         })
         this.addEventListener("menubar-item-mousedown", () => {
-            if (!this.lastActive)
+            if (!this.lastActive) 
                 this.lastActive = document.activeElement
         })
         this.addEventListener("menubar-clicked", evt => {
@@ -194,10 +216,12 @@ export class Menubar extends HTMLElement {
             this.lastActive.focus()
         this.lastActive = null
         if (!this.menubar.classList.contains("invisible")) {
-            if (this.autoMode)
+            if (this.autoMode) 
                 this.menubar.classList.add("invisible")
-//            setTimeout(() => this.$emit('resize'))
-        }        
+        }
+        if (this.autoMode) 
+            this.dispatchEvent(new CustomEvent('resize'))
+        this.dispatchEvent(new CustomEvent('menuclosed'))
     }
 
     stopKeyboardActivated() {
@@ -288,4 +312,3 @@ export class Menubar extends HTMLElement {
 customElements.define('menubar-mainmenu', Menubar)
 
 // TODO Submenu zoom-level
-// TODO Resize event when automode
