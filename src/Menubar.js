@@ -211,7 +211,25 @@ export class Menubar extends HTMLElement {
             const getKey = k => k.length == 1 ? k.toLowerCase() : k
 
             if (!text)
-                return  null
+                return null
+            
+            if (text == "Num+")
+                return {
+                    ctrl: false,
+                    shift: false,
+                    alt: false,
+                    numpad: true,
+                    val: "+"
+                }
+            if (text == "Num-")
+                return {
+                    ctrl: false,
+                    shift: false,
+                    alt: false,
+                    numpad: true,
+                    val: "-"
+                }
+            
             var parts = text.split("+")
             if (parts.length == 1)
                 return {
@@ -246,11 +264,22 @@ export class Menubar extends HTMLElement {
     checkShortcut(evt) {
         const shortcuts = this.shortcuts.get(evt.key)
         if (shortcuts) {
-            const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n.shortcut.alt == evt.altKey)
-            if (shortcut.length == 1) {
+            if (shortcuts[0].key == '+' && shortcuts[0].numpad && evt.keyCode == 107) {
                 shortcut[0].menuitem.executeCommand()
                 evt.preventDefault()
                 evt.stopPropagation()
+            }
+            else if (shortcuts[0].key == '-' && shortcuts[0].numpad && evt.keyCode == 109) {
+                shortcuts[0].menuitem.executeCommand()
+                evt.preventDefault()
+                evt.stopPropagation()
+            } else {
+                const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n.shortcut.alt == evt.altKey)
+                if (shortcut.length == 1) {
+                    shortcut[0].menuitem.executeCommand()
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                }
             }
         }
     }

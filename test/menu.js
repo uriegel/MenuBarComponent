@@ -23,6 +23,9 @@ window.onDarkTheme = isChecked => {
         document.body.classList.remove("darkTheme")
 }
 
+window.selectAll = () => console.log("selectAll")
+window.selectNone = () => console.log("selectNone")
+
 window.onHidden = isChecked => {
     console.log(`Show hidden ${isChecked}`)
 }

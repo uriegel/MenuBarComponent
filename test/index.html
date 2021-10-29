@@ -30,8 +30,8 @@
                     <menubar-menuitem text="_Gleichen Ordner öffnen" shortcut="F9"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Selektion">
-                    <menubar-menuitem text="_Alles" shortcut="Num+"></menubar-menuitem>
-                    <menubar-menuitem text="_Selektion entfernen" shortcut="Num-"></menubar-menuitem>
+                    <menubar-menuitem text="_Alles" shortcut="Num+" action="selectAll"></menubar-menuitem>
+                    <menubar-menuitem text="_Selektion entfernen" shortcut="Num-" action="selectNone"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Ansicht">
                     <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" setChecked="setHidden" shortcut="Strg+H"></menubar-menuitem>
