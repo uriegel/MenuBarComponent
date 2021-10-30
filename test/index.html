@@ -20,7 +20,7 @@
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="_Ordner anlegen" shortcut="F7"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
-                    <menubar-menuitem text="_Eigenschaften" shortcut="Alt+Enter"></menubar-menuitem>
+                    <menubar-menuitem id="properties" text="_Eigenschaften" shortcut="Alt+Enter" action="onProperties"></menubar-menuitem>
                     <menubar-menuitem text="Öffnen _mit" shortcut="Strg+Enter"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="_Beenden" shortcut="Alt+F4" action="onClose"></menubar-menuitem>
@@ -34,7 +34,7 @@
                     <menubar-menuitem text="_Selektion entfernen" shortcut="Num-" action="selectNone"></menubar-menuitem>
                 </menubar-submenu>
                 <menubar-submenu header="_Ansicht">
-                    <menubar-menuitem text="_Versteckte Dateien" checkbox action="onHidden" setChecked="setHidden" shortcut="Strg+H"></menubar-menuitem>
+                    <menubar-menuitem id="setHidden" text="_Versteckte Dateien" checkbox action="onHidden" shortcut="Strg+H"></menubar-menuitem>
                     <menubar-menuitem text="_Aktualisieren" shortcut="Strg+R"></menubar-menuitem>
                     <menubar-separator></menubar-separator>
                     <menubar-menuitem text="_Vorschau" shortcut="F3"></menubar-menuitem>
@@ -57,6 +57,10 @@
                     <button>Erster</button>
                     <button>Zweiter</button>
                     <button>Dritter</button>
+                    <input type="checkbox" id="isHidden">
+                    <span>Versteckte Dateien</span>
+                    <input type="checkbox" checked id="showProperties">
+                    <span>Zeige Eigenschaften</span>
                 </p>
             </div>
         </div>

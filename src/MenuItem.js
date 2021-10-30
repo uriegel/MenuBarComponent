@@ -38,6 +38,9 @@ export class MenuItem extends HTMLElement {
                     height: 100%;
                     display: flex;                    
                 }
+                #menuItem.hidden {
+                    display: none;
+                }
                 #menuItem.submenu-item {
                     padding: 5px 20px 5px 0px;
                 }
@@ -62,19 +65,15 @@ export class MenuItem extends HTMLElement {
         const posttext = this.shadowRoot.getElementById("posttext")
         const textParts = getTextParts(this.getAttribute("text"))
         this.action = this.getAttribute("action")
-        const setChecked = this.getAttribute("setChecked")
-        if (setChecked)
-            setTimeout(() => eval(`${setChecked}(this)`))
         pretext.innerText = textParts[0]
         this.mnemonicText.innerText = textParts[1]
         posttext.innerText = textParts[2]
         this.isCheckbox = this.getAttribute("checkbox") != null
-        const menuItem = this.shadowRoot.getElementById("menuItem")
         if (this.isCheckbox)
-            menuItem.classList.add("checkbox")
+            this.menuItem.classList.add("checkbox")
         this.mainmenu = this.getAttribute("mainmenu") == "true"        
         if (!this.mainmenu) 
-            menuItem.classList.add("submenu-item")
+            this.menuItem.classList.add("submenu-item")
         const shortcut = this.shadowRoot.getElementById("shortcut")
         shortcut.innerText = this.getAttribute("shortcut")
                          
@@ -142,6 +141,21 @@ export class MenuItem extends HTMLElement {
             this.menuItem.classList.add("is-checked")
         else
             this.menuItem.classList.remove("is-checked")
+    }
+
+    get isHidden()  {
+        return this.menuItem.classList.contains("hidden")
+    }
+    set isHidden(value) {
+        if (value)
+            this.menuItem.classList.add("hidden")
+        else
+            this.menuItem.classList.remove("hidden")
+        this.dispatchEvent(new CustomEvent('menubar-item-hidden', {
+            bubbles: true,
+            composed: true,
+            detail: value
+        }))        
     }
 
     getMnemonic() {

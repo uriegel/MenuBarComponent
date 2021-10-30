@@ -158,6 +158,7 @@ export class Menubar extends HTMLElement {
             if (!this.lastActive) 
                 this.lastActive = document.activeElement
         })
+        this.addEventListener("menubar-item-hidden", evt => this.getShortcuts())
         this.addEventListener("menubar-clicked", evt => {
             this.isKeyboardActivated = false
             this.selectedIndex = evt.detail.index
@@ -271,7 +272,9 @@ export class Menubar extends HTMLElement {
                 }
         }
 
-        const items = Array.from(document.querySelectorAll('menubar-menuitem'))
+        const items = Array
+            .from(document.querySelectorAll('menubar-menuitem'))
+            .filter(n => !n.isHidden)
             .map(n => ({ shortcut: getShortcut(n.getAttribute("shortcut")), menuitem: n }))
             .filter(n => n.shortcut)
 

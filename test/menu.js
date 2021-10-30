@@ -1,20 +1,10 @@
-import { setHiddenCallback } from "./index.js"
+import { onHidden } from './index.js'
 
-window.onRename = () => {
-    alert("Rename")
-}
-
-window.onExtendedRename = () => {
-    alert("Extended Rename")
-}
-
-window.onCopy = () => {
-    alert("Copy Files")
-}
-
-window.onMove = () => {
-    console.log("Move Files")
-}
+window.onRename = () => alert("Rename")
+window.onExtendedRename = () => alert("Extended Rename")
+window.onCopy = () => alert("Copy Files")
+window.onMove = () => console.log("Move Files")
+window.onProperties = () => console.log("onProperties")
 
 window.onDarkTheme = isChecked => {
     if (isChecked)
@@ -26,11 +16,7 @@ window.onDarkTheme = isChecked => {
 window.selectAll = () => console.log("selectAll")
 window.selectNone = () => console.log("selectNone")
 
-window.onHidden = isChecked => {
-    console.log(`Show hidden ${isChecked}`)
-}
-
-window.setHidden = mi => setHiddenCallback(isChecked => mi.isChecked = isChecked)
+window.onHidden = isChecked => onHidden(isChecked)
 
 window.onDevTools = isChecked => {
     console.log(`Dev tools ${isChecked}`)

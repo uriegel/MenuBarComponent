@@ -82,6 +82,8 @@ class SubmenuList extends HTMLElement {
                 this.selectedIndex--
                 if (this.selectedIndex < 0)
                     this.selectedIndex = this.menuItems.length - 1
+                if (this.menuItems[this.selectedIndex].isHidden)
+                        this.selectedIndex--
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
@@ -89,6 +91,8 @@ class SubmenuList extends HTMLElement {
                 this.selectedIndex++
                 if (this.selectedIndex == this.menuItems.length)
                     this.selectedIndex = 0
+                if (this.menuItems[this.selectedIndex].isHidden)
+                    this.selectedIndex++
                 evt.preventDefault()
                 evt.stopPropagation()
                 break
