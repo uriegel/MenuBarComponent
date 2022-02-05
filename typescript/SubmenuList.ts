@@ -1,4 +1,19 @@
-class SubmenuList extends HTMLElement {
+import { MenuItem } from "./MenuItem"
+
+export type Mnemonic = {
+    key: string | null
+    index: number
+}
+
+export class SubmenuList extends HTMLElement {
+
+    private index: string = ""
+    private menuItems: MenuItem[] = []
+    private mnemonics: Mnemonic[] = []
+    private isAccelerated = false
+    private keyIndex = 0
+    private lastKey: string | null = null
+
     constructor() {
         super()
         this.selectedIndex = -1
@@ -23,22 +38,22 @@ class SubmenuList extends HTMLElement {
                 <slot id="slot">
             </div>
         `
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.shadowRoot!.appendChild(template.content.cloneNode(true))
     }
 
     static get observedAttributes() {
         return ['index', 'is-accelerated']
     }
 
-    attributeChangedCallback(attributeName, oldValue, newValue) {
+    attributeChangedCallback(attributeName: string, oldValue: string, newValue: string) {
         switch (attributeName) {
             case "index":
                 this.index = newValue
-                this.menuItems = Array.from(document.querySelectorAll('menubar-menuitem'))
-                    .filter(n => n.assignedSlot.id == `submenu-${this.index}`)
+                this.menuItems = (Array.from(document.querySelectorAll('menubar-menuitem')) as MenuItem[])
+                    .filter(n => n.assignedSlot?.id == `submenu-${this.index}`)
                 this.menuItems.forEach((n, i) => {
                     n.classList.add("submenu-item")
-                    n.setAttribute("index", i)
+                    n.setAttribute("index", i.toString())
                 })
                 setTimeout(() => this.mnemonics = this.menuItems.map(n => n.getMnemonic()).map((n, i) => ({key: n, index: i})))
                 break
@@ -50,24 +65,24 @@ class SubmenuList extends HTMLElement {
     }
 
     connectedCallback() {
-        this.addEventListener("menubar-item-mouseover", evt => {
-            this.selectedIndex = evt.detail.index
+        this.addEventListener("menubar-item-mouseover", (evt: Event) => {
+            this.selectedIndex = (evt as CustomEvent).detail.index
         })
     }
 
     get selectedIndex() {
         return this._selectedIndex
     }
-
     set selectedIndex(value) {
         this._selectedIndex = value
         if (this.menuItems)
-            this.menuItems.forEach(n => n.setAttribute("selected-index", value))
+            this.menuItems.forEach(n => n.setAttribute("selected-index", value.toString()))
     }
+    private _selectedIndex = 0
 
     resetIndex() { this.selectedIndex = -1 }
 
-    onKeyDown(evt) {
+    onKeyDown(evt: KeyboardEvent) {
         switch (evt.which) {
             case 13: // Enter
             case 32: // Space                

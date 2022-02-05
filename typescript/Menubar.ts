@@ -1,10 +1,40 @@
+import { MenuItem } from "./MenuItem"
+import { Submenu } from "./Submenu"
+import { Mnemonic } from "./SubmenuList"
+
+type Shortcut = {
+    ctrl: boolean
+    shift: boolean
+    alt: boolean
+    numpad: boolean
+    val: string
+} | {
+    ctrl: boolean
+    shift: boolean
+    alt: boolean
+    val: string
+    numpad?: never
+} | null    
+
+type ShortcutItem = {
+    shortcut: Shortcut
+    menuitem: MenuItem
+}
+
 export class Menubar extends HTMLElement {
+    private itemCount = 0
+    private mnemonics: Mnemonic[] 
+    private menubar: HTMLElement
+    private autoMode = false
+    private lastActive: HTMLElement | null = null
+    private shortcuts: Map<string, ShortcutItem[]> = new Map()
+
     constructor() {
         super()
 
         var style = document.createElement("style")
         document.head.appendChild(style)
-        style.sheet.insertRule(`:root {
+        style.sheet!.insertRule(`:root {
             --menubar-color: black;
             --menubar-background-color: white;
             --menubar-hover-color: lightblue;
@@ -39,21 +69,21 @@ export class Menubar extends HTMLElement {
                 <slot></slot>
             </ul>
         `
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        this.shadowRoot!.appendChild(template.content.cloneNode(true))
         this.style.outline = "none"
         this.setAttribute("tabindex", "-1")
 
         const items = Array.from(document.querySelectorAll('menubar-submenu'))
         this.itemCount = items.length
-        items.forEach((n, i) => n.setAttribute("index", i))
+        items.forEach((n, i) => n.setAttribute("index", i.toString()))
         this.mnemonics = items.map((n, i) => {
             const header = n.getAttribute("header")
-            const pos = header.indexOf('_')
-            const key = pos != -1 ? header[pos + 1].toLowerCase() : null
+            const pos = header?.indexOf('_') ?? -1
+            const key = pos != -1 ? header![pos + 1].toLowerCase() : null
             return ({key, index: i})
         })
 
-        this.menubar = this.shadowRoot.querySelector('ul')
+        this.menubar = this.shadowRoot!.querySelector('ul')!
         this.setAutoMode(this.getAttribute("automode") == "true")
         this.getShortcuts()
     }
@@ -62,7 +92,7 @@ export class Menubar extends HTMLElement {
         return ['automode']
     }
 
-    attributeChangedCallback(attributeName, oldValue, newValue) {
+    attributeChangedCallback(attributeName: string, oldValue: string, newValue: string) {
         switch (attributeName) {
             case "automode":
                 if (oldValue != newValue)
@@ -71,7 +101,7 @@ export class Menubar extends HTMLElement {
         }
     }
 
-    setAutoMode(automode) {
+    setAutoMode(automode: boolean) {
         this.autoMode = automode
         if (automode) 
             this.menubar.classList.add("invisible")
@@ -86,10 +116,11 @@ export class Menubar extends HTMLElement {
     set isAccelerated(value) {
         this._isAccelerated = value
         const items = Array.from(document.querySelectorAll('menubar-menuitem'))
-        items.forEach(n => n.setAttribute("is-accelerated", value))
+        items.forEach(n => n.setAttribute("is-accelerated", `${value}`))
         const mainitems = Array.from(document.querySelectorAll('menubar-submenu'))
-        mainitems.forEach(n => n.setAttribute("is-accelerated", value))
+        mainitems.forEach(n => n.setAttribute("is-accelerated", `${value}`))
     }
+    private _isAccelerated = false
 
     get isKeyboardActivated()  {
         return this._isKeyboardActivated
@@ -97,8 +128,9 @@ export class Menubar extends HTMLElement {
     set isKeyboardActivated(value) {
         this._isKeyboardActivated = value
         const items = Array.from(document.querySelectorAll('menubar-submenu'))
-        items.forEach(n => n.setAttribute("is-keyboard-activated", value))
+        items.forEach(n => n.setAttribute("is-keyboard-activated", `${value}`))
     }
+    private _isKeyboardActivated = false
     
     get selectedIndex()  {
         return this._selectedIndex
@@ -106,11 +138,12 @@ export class Menubar extends HTMLElement {
     set selectedIndex(value) {
         this._selectedIndex = value
         const items = Array.from(document.querySelectorAll('menubar-submenu'))
-        items.forEach(n => n.setAttribute("selected-index", value))
+        items.forEach(n => n.setAttribute("selected-index", value.toString()))
     }
+    private _selectedIndex = 0
 
     connectedCallback() {
-        document.addEventListener("keydown", evt => {
+        document.addEventListener("keydown", (evt: KeyboardEvent) => {
             if (this.autoMode && evt.keyCode == 18) { // alt
                 if (this.menubar.classList.contains("invisible")) {
                     this.menubar.classList.remove("invisible")
@@ -130,7 +163,7 @@ export class Menubar extends HTMLElement {
                     if (this.selectedIndex == -1)
                         this.isKeyboardActivated = true
                     this.isAccelerated = true
-                    this.lastActive = document.activeElement
+                    this.lastActive = document.activeElement as HTMLElement
                     this.focus()
                 }
                 evt.preventDefault()
@@ -150,18 +183,18 @@ export class Menubar extends HTMLElement {
             }
         }, true)
 
-        this.addEventListener("menubar-item-mouseover", evt => {
-            if (evt.detail.mainmenu && this.selectedIndex != -1)
-                this.selectedIndex = evt.detail.index
+        this.addEventListener("menubar-item-mouseover", (evt: Event) => {
+            if ((evt as CustomEvent).detail.mainmenu && this.selectedIndex != -1)
+                this.selectedIndex = (evt as CustomEvent).detail.index
         })
         this.addEventListener("menubar-item-mousedown", () => {
             if (!this.lastActive) 
-                this.lastActive = document.activeElement
+                this.lastActive = document.activeElement as HTMLElement
         })
         this.addEventListener("menubar-item-hidden", evt => this.getShortcuts())
         this.addEventListener("menubar-clicked", evt => {
             this.isKeyboardActivated = false
-            this.selectedIndex = evt.detail.index
+            this.selectedIndex = (evt as CustomEvent).detail.index
         })
         this.addEventListener("menubar-executed", () => this.closeMenu())
         this.addEventListener("focusout", () => this.closeMenu())
@@ -202,7 +235,7 @@ export class Menubar extends HTMLElement {
                             break
                         }
                     }
-                    const items = Array.from(document.querySelectorAll('menubar-submenu'))
+                    const items = Array.from(document.querySelectorAll('menubar-submenu')) as Submenu[]
                     items.forEach(n => n.onKeyDown(evt))
                 }
                 break
@@ -231,9 +264,9 @@ export class Menubar extends HTMLElement {
     }
 
     getShortcuts() {
-        const getShortcut = text => {
+        const getShortcut = (text: string | null) => {
 
-            const getKey = k => k.length == 1 ? k.toLowerCase() : k
+            const getKey = (k: string) => k.length == 1 ? k.toLowerCase() : k
 
             if (!text)
                 return null
@@ -272,43 +305,42 @@ export class Menubar extends HTMLElement {
                 }
         }
 
-        const items = Array
-            .from(document.querySelectorAll('menubar-menuitem'))
+        const items = (Array.from(document.querySelectorAll('menubar-menuitem')) as MenuItem[])
             .filter(n => !n.isHidden)
             .map(n => ({ shortcut: getShortcut(n.getAttribute("shortcut")), menuitem: n }))
             .filter(n => n.shortcut)
 
-        this.shortcuts = new Map()
+        this.shortcuts = new Map<string, ShortcutItem[]>()
         items.forEach(i => {
-            const list = this.shortcuts.get(i.shortcut.val)
+            const list = this.shortcuts.get(i.shortcut?.val!)
             if (list)
-                this.shortcuts.set(i.shortcut.val, [...list, i])
+                this.shortcuts.set(i.shortcut!.val, [...list, i])
             else
-                this.shortcuts.set(i.shortcut.val, [i])
+                this.shortcuts.set(i.shortcut!.val, [i])
         })
     }
 
-    checkShortcut(evt) {
-        const shortcuts = this.shortcuts.get(evt.key)
-        if (shortcuts) {
-            if (shortcuts[0].key == '+' && shortcuts[0].numpad && evt.keyCode == 107) {
-                shortcut[0].menuitem.executeCommand()
-                evt.preventDefault()
-                evt.stopPropagation()
-            }
-            else if (shortcuts[0].key == '-' && shortcuts[0].numpad && evt.keyCode == 109) {
-                shortcuts[0].menuitem.executeCommand()
-                evt.preventDefault()
-                evt.stopPropagation()
-            } else {
-                const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n.shortcut.alt == evt.altKey)
-                if (shortcut.length == 1) {
-                    shortcut[0].menuitem.executeCommand()
-                    evt.preventDefault()
-                    evt.stopPropagation()
-                }
-            }
-        }
+    checkShortcut(evt: KeyboardEvent) {
+        // const shortcuts = this.shortcuts.get(evt.key)
+        // if (shortcuts) {
+        //     if (shortcuts[0]?.key == '+' && shortcuts[0]?.numpad && evt.keyCode == 107) {
+        //         shortcuts[0].menuitem.executeCommand()
+        //         evt.preventDefault()
+        //         evt.stopPropagation()
+        //     }
+        //     else if (shortcuts[0].key == '-' && shortcuts[0].numpad && evt.keyCode == 109) {
+        //         shortcuts[0]!.menuitem.executeCommand()
+        //         evt.preventDefault()
+        //         evt.stopPropagation()
+        //     } else {
+        //         const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n!.shortcut!.alt == evt.altKey)
+        //         if (shortcut.length == 1) {
+        //             shortcut[0].menuitem.executeCommand()
+        //             evt.preventDefault()
+        //             evt.stopPropagation()
+        //         }
+        //     }
+        // }
     }
 }
 

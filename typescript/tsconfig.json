@@ -8,7 +8,7 @@
         "declaration": true,
         "allowUnreachableCode": false,
         "exactOptionalPropertyTypes": true,
-        "noFallthroughCasesInSwitch": true,
+        "noFallthroughCasesInSwitch": false,
         "noImplicitOverride": true,
         "noImplicitReturns": true,
         "noPropertyAccessFromIndexSignature": true,
