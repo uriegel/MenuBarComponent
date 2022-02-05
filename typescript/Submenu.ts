@@ -1,4 +1,10 @@
 export class Submenu extends HTMLElement {
+
+    private menubaritem: HTMLElement
+    private item: HTMLElement
+    private index: number
+    private submenulist: HTMLElement
+
     constructor() {
         super()
         this.attachShadow({ mode: 'open' })
@@ -44,16 +50,16 @@ export class Submenu extends HTMLElement {
                 </menubar-submenu-list>
             </li>
         `
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        this.menubaritem = this.shadowRoot.getElementById("menubarItem")
-        this.item = this.shadowRoot.getElementById("item")
-        this.index = Number.parseInt(this.getAttribute("index"))
-        this.item.setAttribute("text", this.getAttribute("header"))
-        this.item.setAttribute("index", this.index)
-        const slot = this.shadowRoot.getElementById("slot")
+        this.shadowRoot!.appendChild(template.content.cloneNode(true))
+        this.menubaritem = this.shadowRoot!.getElementById("menubarItem")!
+        this.item = this.shadowRoot!.getElementById("item")!
+        this.index = Number.parseInt(this.getAttribute("index")!)
+        this.item.setAttribute("text", this.getAttribute("header")!)
+        this.item.setAttribute("index", this.index.toString())
+        const slot = this.shadowRoot!.getElementById("slot") as HTMLSlotElement
         slot.id = `submenu-${this.index}`
-        this.submenulist = this.shadowRoot.getElementById('submenu')
-        this.submenulist.setAttribute("index", this.index)
+        this.submenulist = this.shadowRoot!.getElementById('submenu')!
+        this.submenulist.setAttribute("index", this.index.toString())
     }
 
     static get observedAttributes() {
@@ -70,19 +76,19 @@ export class Submenu extends HTMLElement {
             }
         })))
         this.menubaritem.addEventListener("click", evt => {
-            if (!evt.target.classList.contains("submenu-item"))
+            if (!(evt.target! as HTMLElement).classList.contains("submenu-item"))
                 this.item.executeCommand()
         })
     }
 
-    onKeyDown(evt) {
-        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-submenu-list'))
+    onKeyDown(evt: KeyboardEvent) {
+        const items = Array.from(this.shadowRoot!.querySelectorAll('menubar-submenu-list'))
             .filter(n => window.getComputedStyle(n).display != "none")
         if (items.length == 1)
             items[0].onKeyDown(evt) 
     }
 
-    attributeChangedCallback(attributeName, oldValue, newValue) {
+    attributeChangedCallback(attributeName: string, oldValue: string, newValue: string) {
         switch (attributeName) {
             case "is-accelerated":
                 if (oldValue != newValue)
@@ -114,8 +120,8 @@ export class Submenu extends HTMLElement {
         }
     }
 
-    handleIsAccelerated(value) {
-        const items = Array.from(this.shadowRoot.querySelectorAll('menubar-menuitem'))
+    handleIsAccelerated(value: string) {
+        const items = Array.from(this.shadowRoot!.querySelectorAll('menubar-menuitem'))
         items.forEach(n => n.setAttribute("is-accelerated", value))
         this.submenulist.setAttribute("is-accelerated", value)
     }

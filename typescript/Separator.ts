@@ -1,8 +1,9 @@
 export class Separator extends HTMLElement {
     constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-        const template = document.createElement('template');
+        super()
+        this.attachShadow({ mode: 'open' })
+
+        const template = document.createElement('template')
         template.innerHTML = ` 
             <style>
                 hr {
@@ -11,8 +12,9 @@ export class Separator extends HTMLElement {
                 }
             </style>
             <hr /> 
-        `;
-        this.shadowRoot.appendChild(template.content.cloneNode(true));
+        `
+        this.shadowRoot!.appendChild(template.content.cloneNode(true))
     }
 }
-customElements.define('menubar-separator', Separator);
+
+customElements.define('menubar-separator', Separator)
