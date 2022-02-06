@@ -272,26 +272,27 @@ export class Menubar extends HTMLElement {
         });
     }
     checkShortcut(evt) {
-        // const shortcuts = this.shortcuts.get(evt.key)
-        // if (shortcuts) {
-        //     if (shortcuts[0]?.key == '+' && shortcuts[0]?.numpad && evt.keyCode == 107) {
-        //         shortcuts[0].menuitem.executeCommand()
-        //         evt.preventDefault()
-        //         evt.stopPropagation()
-        //     }
-        //     else if (shortcuts[0].key == '-' && shortcuts[0].numpad && evt.keyCode == 109) {
-        //         shortcuts[0]!.menuitem.executeCommand()
-        //         evt.preventDefault()
-        //         evt.stopPropagation()
-        //     } else {
-        //         const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n!.shortcut!.alt == evt.altKey)
-        //         if (shortcut.length == 1) {
-        //             shortcut[0].menuitem.executeCommand()
-        //             evt.preventDefault()
-        //             evt.stopPropagation()
-        //         }
-        //     }
-        // }
+        const shortcuts = this.shortcuts.get(evt.key);
+        if (shortcuts) {
+            if (shortcuts[0].shortcut.val == '+' && shortcuts[0].shortcut.numpad && evt.keyCode == 107) {
+                shortcuts[0].menuitem.executeCommand();
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+            else if (shortcuts[0].shortcut.val == '-' && shortcuts[0].shortcut.numpad && evt.keyCode == 109) {
+                shortcuts[0].menuitem.executeCommand();
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+            else {
+                const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n.shortcut.alt == evt.altKey);
+                if (shortcut.length == 1) {
+                    shortcut[0].menuitem.executeCommand();
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                }
+            }
+        }
     }
 }
 customElements.define('menubar-mainmenu', Menubar);

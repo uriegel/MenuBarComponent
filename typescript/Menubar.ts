@@ -6,15 +6,9 @@ type Shortcut = {
     ctrl: boolean
     shift: boolean
     alt: boolean
-    numpad: boolean
+    numpad?: boolean
     val: string
-} | {
-    ctrl: boolean
-    shift: boolean
-    alt: boolean
-    val: string
-    numpad?: never
-} | null    
+} 
 
 type ShortcutItem = {
     shortcut: Shortcut
@@ -264,7 +258,7 @@ export class Menubar extends HTMLElement {
     }
 
     getShortcuts() {
-        const getShortcut = (text: string | null) => {
+        const getShortcut: (text: string | null)=>Shortcut|null  = (text: string | null) => {
 
             const getKey = (k: string) => k.length == 1 ? k.toLowerCase() : k
 
@@ -305,10 +299,10 @@ export class Menubar extends HTMLElement {
                 }
         }
 
-        const items = (Array.from(document.querySelectorAll('menubar-menuitem')) as MenuItem[])
+        const items: ShortcutItem[] = (Array.from(document.querySelectorAll('menubar-menuitem')) as MenuItem[])
             .filter(n => !n.isHidden)
             .map(n => ({ shortcut: getShortcut(n.getAttribute("shortcut")), menuitem: n }))
-            .filter(n => n.shortcut)
+            .filter(n => n.shortcut) as ShortcutItem[]
 
         this.shortcuts = new Map<string, ShortcutItem[]>()
         items.forEach(i => {
@@ -321,26 +315,26 @@ export class Menubar extends HTMLElement {
     }
 
     checkShortcut(evt: KeyboardEvent) {
-        // const shortcuts = this.shortcuts.get(evt.key)
-        // if (shortcuts) {
-        //     if (shortcuts[0]?.key == '+' && shortcuts[0]?.numpad && evt.keyCode == 107) {
-        //         shortcuts[0].menuitem.executeCommand()
-        //         evt.preventDefault()
-        //         evt.stopPropagation()
-        //     }
-        //     else if (shortcuts[0].key == '-' && shortcuts[0].numpad && evt.keyCode == 109) {
-        //         shortcuts[0]!.menuitem.executeCommand()
-        //         evt.preventDefault()
-        //         evt.stopPropagation()
-        //     } else {
-        //         const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n!.shortcut!.alt == evt.altKey)
-        //         if (shortcut.length == 1) {
-        //             shortcut[0].menuitem.executeCommand()
-        //             evt.preventDefault()
-        //             evt.stopPropagation()
-        //         }
-        //     }
-        // }
+        const shortcuts = this.shortcuts.get(evt.key)
+        if (shortcuts) {
+            if (shortcuts[0].shortcut.val == '+' && shortcuts[0].shortcut.numpad && evt.keyCode == 107) {
+                shortcuts[0].menuitem.executeCommand()
+                evt.preventDefault()
+                evt.stopPropagation()
+            }
+            else if (shortcuts[0].shortcut.val == '-' && shortcuts[0].shortcut.numpad && evt.keyCode == 109) {
+                shortcuts[0]!.menuitem.executeCommand()
+                evt.preventDefault()
+                evt.stopPropagation()
+            } else {
+                const shortcut = shortcuts.filter(n => n.shortcut.ctrl == evt.ctrlKey && n!.shortcut!.alt == evt.altKey)
+                if (shortcut.length == 1) {
+                    shortcut[0].menuitem.executeCommand()
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                }
+            }
+        }
     }
 }
 
