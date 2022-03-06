@@ -63,7 +63,6 @@ export class MenuItem extends HTMLElement {
         this.mnemonicText = this.shadowRoot.getElementById("mnemonictext");
         const posttext = this.shadowRoot.getElementById("posttext");
         const textParts = getTextParts(this.getAttribute("text"));
-        this.action = this.getAttribute("action");
         pretext.innerText = textParts[0];
         this.mnemonicText.innerText = textParts[1];
         posttext.innerText = textParts[2];
@@ -165,13 +164,18 @@ export class MenuItem extends HTMLElement {
                 composed: true
             }));
             if (!this.isCheckbox) {
-                if (this.action)
-                    eval(`${this.action}()`);
+                this.dispatchEvent(new CustomEvent('menubar-action', {
+                    bubbles: true,
+                    composed: true
+                }));
             }
             else {
                 this.isChecked = !this.isChecked;
-                if (this.action)
-                    eval(`${this.action}(${this.isChecked})`);
+                this.dispatchEvent(new CustomEvent('menubar-checkbox', {
+                    bubbles: true,
+                    composed: true,
+                    detail: { isChecked: this.isChecked }
+                }));
             }
         }
     }

@@ -4,10 +4,18 @@ console.log("Started")
 
 export const onHidden = (isChecked: boolean) => isHidden.checked = isChecked
 
-var setHidden = document.getElementById("setHidden") as MenuItem
-var isHidden = document.getElementById("isHidden") as HTMLInputElement
-var showProperties = document.getElementById("showProperties") as HTMLInputElement
-var properties = document.getElementById("properties") as MenuItem
+
+document.getElementById("onRename")?.addEventListener("menubar-action", (evt: Event) => {
+    console.log("Geklickt", evt)
+})
+document.getElementById("onDarkTheme")?.addEventListener("menubar-checkbox", (evt: Event) => {
+    console.log("Checked", (evt as CustomEvent).detail.isChecked)
+})
+
+const setHidden = document.getElementById("setHidden") as MenuItem
+const isHidden = document.getElementById("isHidden") as HTMLInputElement
+const showProperties = document.getElementById("showProperties") as HTMLInputElement
+const properties = document.getElementById("properties") as MenuItem
 
 isHidden.addEventListener("change", evt => {
     setHidden.isChecked = isHidden.checked

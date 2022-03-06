@@ -2,7 +2,6 @@ export declare class MenuItem extends HTMLElement {
     private index;
     private menuItem;
     private mnemonicText;
-    private action;
     private isCheckbox;
     private mainmenu;
     constructor();
