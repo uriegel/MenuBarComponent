@@ -1,4 +1,4 @@
-export declare type Mnemonic = {
+export type Mnemonic = {
     key: string | null;
     index: number;
 };

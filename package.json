@@ -27,5 +27,8 @@
   "bugs": {
     "url": "https://github.com/uriegel/web-menu-bar/issues"
   },
-  "homepage": "https://github.com/uriegel/web-menu-bar#readme"
+  "homepage": "https://github.com/uriegel/web-menu-bar#readme",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  }
 }
