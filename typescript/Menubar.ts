@@ -238,18 +238,18 @@ export class Menubar extends HTMLElement {
     }
 
     closeMenu() {
-        // this.stopKeyboardActivated()
-        // this.selectedIndex = -1
-        // if (this.lastActive)
-        //     this.lastActive.focus()
-        // this.lastActive = null
-        // if (!this.menubar.classList.contains("invisible")) {
-        //     if (this.autoMode) 
-        //         this.menubar.classList.add("invisible")
-        // }
-        // if (this.autoMode) 
-        //     this.dispatchEvent(new CustomEvent('resize'))
-        // this.dispatchEvent(new CustomEvent('menuclosed'))
+        this.stopKeyboardActivated()
+        this.selectedIndex = -1
+        if (this.lastActive)
+            this.lastActive.focus()
+        this.lastActive = null
+        if (!this.menubar.classList.contains("invisible")) {
+            if (this.autoMode) 
+                this.menubar.classList.add("invisible")
+        }
+        if (this.autoMode) 
+            this.dispatchEvent(new CustomEvent('resize'))
+        this.dispatchEvent(new CustomEvent('menuclosed'))
     }
 
     stopKeyboardActivated() {
